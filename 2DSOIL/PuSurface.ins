@@ -1,0 +1,28 @@
+cccz the following blocks are for irrigation
+       Double Precision Qautoirrig(NumNPD)
+       Common /SurWaterInput/ Qautoirrig
+
+cccz the following blocks are used for surface runoff
+cccz Zhuangji Wang
+       Integer SurWeatherUpdate,SurNodeIndex,
+     !        SurfNodeNodeIndexH(NumBPD),
+     !        SurfNodeSurfIndexH(NumBPD)
+	   Double Precision h_Stay(NumBPD),
+     !        q_Flux(NumNPD), Efflux(NumBPD), Exflux(NumBPD),
+     !        VarBW_Record(NumBPD,3),
+     !        CriticalH,CriticalH_R,
+     !        RunoffLeft,RunoffRight,
+     !        RunoffLeft_Efflux,RunoffRight_Efflux,
+     !        WaterStorageFrac
+	   Double Precision slopeCoord(NumBPD,2)
+	   Double Precision PEAK
+       Common /SurWaterBalAdjust/ SurWeatherUpdate, SurNodeIndex,
+     !        SurfNodeNodeIndexH,SurfNodeSurfIndexH,
+     !        h_Stay,q_Flux,Efflux,Exflux,
+     !        CriticalH,CriticalH_R,
+     !        slopeCoord,PEAK,
+     !        VarBW_Record,RunoffLeft,RunoffRight,
+     !        RunoffLeft_Efflux,RunoffRight_Efflux,
+     !        WaterStorageFrac
+
+
