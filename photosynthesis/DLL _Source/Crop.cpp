@@ -19,16 +19,16 @@ using namespace std;
 #define endl "\n"
 #define comma ","
 
-			 // note that we have to dereference the variable in order to
-			 // assign a value that can be passed back to GLYCIM. This is 
-			 // because the FORTRAN program expects a pointer rather than
-			 // a value. I don't think this applies to structures as it does 
-             // variables that may be in the arguments list.
-             // note use of lower case names. Upper and lower case conversions between
-             // fortran and C++ don't matter here because these are arguments and not
-             // a function name. GASEXCHANGER must be upper case because it is a function name
+// note that we have to dereference the variable in order to
+// assign a value that can be passed back to GLYCIM. This is 
+// because the FORTRAN program expects a pointer rather than
+// a value. I don't think this applies to structures as it does 
+// variables that may be in the arguments list.
+// note use of lower case names. Upper and lower case conversions between
+// fortran and C++ don't matter here because these are arguments and not
+// a function name. GASEXCHANGER must be upper case because it is a function name
 
-int compare(const void *arg1, const void *arg2)
+int compare(const void* arg1, const void* arg2)
 {
 	/* Compare all of both strings: */
 	if (*(double*)arg1 > *(double*)arg2) return 1;
@@ -36,32 +36,36 @@ int compare(const void *arg1, const void *arg2)
 	return 0;
 };
 #ifdef _WIN32
-void _stdcall GASEXCHANGER(struct 
+void _stdcall GASEXCHANGER(struct
 #else
 void gasexchanger_(struct
 #endif
-	                       WeatherCommon       *Weather,   // Define global variables block which connect GLYCIM variables
-	                       PlantCommon         *Plant
-	
-	)
+	WeatherCommon* Weather,   // Define global variables block which connect GLYCIM variables
+	PlantCommon* Plant
+
+)
 
 {
 
 
 	static CController* pSC; //declare as static to ensure only one copy is instantiated during GLYCIM execution
-	
+
 //	TInitInfo initInfo;
 	{
 
-		initInfo.latitude = Weather->CLATUDE;
+		initInfo.latitude = Weather->CLATUDE; 
 		//initInfo.longitude = -13.0; // hard coded. Need to read in GLYCIM
 		initInfo.longitude = -93.75;
 		initInfo.altitude = 480;      // hard coded. Need to read in GLYCIM
-		
+
 		initInfo.NRATIO = Plant->NRATIO;
 		//Weather->PSIL[Weather->ITIME-1] = -2.0;
-
-		pSC = new CController(initInfo); // RESET variables at the beginning of each run (1 hour)
+		if (getInitialized() == 0)
+		{
+          pSC = new CController(initInfo); // RESET variables at the beginning of each run (1 hour)
+		  setInitialized(1);
+        }
+		
 	}
 	
 
@@ -97,8 +101,8 @@ void gasexchanger_(struct
 
 		pSC->run(wthr, initInfo);
 
-		// Plant->photosynthesis_gross = pSC->get_photosynthesis_gross();//umol CO2 m-2 leaf s-1 
-		//I need to transfer this to mg CO2 m-2 leaf s-1 
+		// Plant->photosynthesis_gross = pSC->get_photosynthesis_gross();//umol CO2 m-2 GROUND s-1 (already multiply LAI) 
+		//I need to transfer this to mg CO2 m-2 GROUND s-1 
 		
 		Plant->photosynthesis_gross = pSC->get_photosynthesis_gross() * (44.0/1000.0);
 		

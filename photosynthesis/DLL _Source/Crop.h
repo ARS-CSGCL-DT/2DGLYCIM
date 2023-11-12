@@ -39,7 +39,15 @@ struct PlantCommon {
 
 };
 
- 
+
+
+int Initialized=0;
+
+
+
+void setInitialized(int x) { Initialized = x; }
+int getInitialized() { return Initialized; }
+TInitInfo getInitInfo() { return initInfo; }
 
 
 

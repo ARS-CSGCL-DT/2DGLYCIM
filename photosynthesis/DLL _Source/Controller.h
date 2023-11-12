@@ -12,13 +12,13 @@ class CController
 {
 
 private:
-	
+
 	TInitInfo			initInfo;
 
-	TWeather*           weather;
+	TWeather* weather;
 
-	CGas_exchange_new * sunlit;
-	CGas_exchange_new * shaded;
+	CGas_exchange_new* sunlit;
+	CGas_exchange_new* shaded;
 
 	double sunLAI, shadeLAI;
 	double photosynthesis_gross; // gross photosynthesis, umolCO2 m-2 ground s-1
@@ -43,12 +43,11 @@ private:
 	double temp1;
 	double Ags;
 public:
-	
+
 	CController();
 	CController(const TInitInfo);
 	~CController();
 	
-	TInitInfo getInitInfo() { return initInfo; }
 
 	int run(const TWeather &, TInitInfo);
 	CGas_exchange_new* get_sunlit() { return this->sunlit; }
