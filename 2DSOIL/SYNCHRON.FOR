@@ -4,11 +4,11 @@
       Include 'public.ins'
 	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
      ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/, /error_public/, /DataFilenames/  
+     ! /module_public/,  /DataFilenames/  
       character line*40
       Character*10 SDate,FDate
       double precision tFix,tRigid,dt,t,dtmax
-	real*4 progress, Prev_progress,Clock_start
+      real*4 progress, Prev_progress,Clock_start
       integer*4 ProgressFlag,RunToEnd
       Common /Sychron/ProgressFlag, Prev_progress, 
      !  Clock_start,RunToEnd
@@ -26,7 +26,7 @@
           Read(42,*,ERR=10) DailyOutput,HourlyOutput
           Read(42,*,ERR=10)
           Read(42,*,ERR=10) DailyWeather,HourlyWeather
-		Read(42,*,ERR=10)
+          Read(42,*,ERR=10)
           Read(42,*,ERR=10) RunToEnd
           Close(42)
           Time=Julday(Sdate)
@@ -35,7 +35,7 @@
           Tinit=Time
           NumMod=0
           RunFlag=1
-	    Prev_progress=0.0 ! write progress the first time
+          Prev_progress=0.0 ! write progress the first time
           Progress=0.0
           Call CPU_TIME(ClockStart)
 C Beginday is when the plant model starts. If the model time start is greater
@@ -67,7 +67,7 @@ cccz          endif
      !  dtOpt=dmax1(dtMin,dMul2*dtOpt)
         dt=dmin1(dtOpt,tFix-t)
 cdt  RunFlag is set by the crop model when the crop reaches maturity
-cdt can be overridden for a full year sim of goToEnd>0
+cdt can be overridden for a full year sim of RunToEnd>0
         If ((abs(dt/t).lt.1.E-20).or.
      !           ((RunFlag.eq.0).and.(RunToEnd.eq.0))) then
 	    write(*,*) 'Finished at',time
@@ -81,6 +81,7 @@ cdt can be overridden for a full year sim of goToEnd>0
 *       CALL COUP@(LINE,5,1,24)
 *      write(*,*) Time
       Time = Time + Step
+      
       progress=(Time-Tinit)/(Tfin-Tinit)*100.0
       progress=int(progress)
       temp=Mod(progress,4.0)
@@ -90,8 +91,9 @@ cdt can be overridden for a full year sim of goToEnd>0
            Prev_progress=progress
           endif
       endif
-100	FORMAT(1x,G12.5)
-105	FORMAT(A10,I4)
+            
+100    FORMAT(1x,G12.5)
+105    FORMAT(A10,I4)
       Return
 110   Stop 'Sowing date cannot be earlier than the start of the 
      & soil model'

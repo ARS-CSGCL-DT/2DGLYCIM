@@ -3,7 +3,7 @@
 *     2DSOIL  - Numerical model of two-dimensional soil environment    *
 *                           for field crops with soybean model		 *
 *																	 *
-*						 Release 1.0.0							     *
+*						 Release 3.0.0							     *
 *||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*
 	
 	Include 'public.ins'
@@ -13,8 +13,8 @@
       Include 'pusurface.ins'
       !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
      !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/, /error_public/, /DataFilenames/    
-      
+     !/time_public/,/module_public/,  /DataFilenames/    
+
 	character*132 RunDat
 	integer len, status
 	RunFile="Run.dat"
@@ -22,10 +22,11 @@
 	if (len.gt.0) then
 	  RunFile=RunDat
 	  endif
-	  	 
+	  	
       Call Initialize()
       Call Get_Grid_and_Boundary()
-1	Call Synchronizer()
+1     Call Synchronizer()
+          
 
 C       
 C SetSurfaceD --  reading daily weather
@@ -38,7 +39,9 @@ C SetSurfaceH --  reading hourly weather
       if (DailyWeather.eq.1) Call SetSurfaceD()                         
       Call SetTDB()
       Call AutoIrrigate()
-      Call Mngm()
+      Call Management()
+      Call Irrigation()
+	Call TillageProcess
 c	Call Drip()
 
       !Starter=1.0D0
@@ -53,21 +56,20 @@ ccc wsun here to call Glycim crop subrountine as a dll
       Call SoluteUptake()
       Call GasUptake()
       
-c	Call SetBoundary()
+c      Call SetBoundary()
 cccz here we start to add surface process
+cccz surface mulch (physical perspective)
+      Call Surface_Mulch_Process()
 cccz surface water
       Call Surface_Water_Balance_Adjustment()
-cccz surface mulch (physical perspective)
-c	Call Surface_Mulch_Process()
-      
+      Call SoilNitrogen()
       Call WaterMover()
       Call SoluteMover()
       Call HeatMover()
       Call GasMover()
-      Call SoilNitrogen()
-C	Call MacroChem()
-c	Call Water_Mass_Balance() 
-c     Call MassBl() ?
+
+C      Call MacroChem()
+c      Call Water_Mass_Balance() 
       if (outputSoilYes.gt.0) then 
          Call Output()
         endif

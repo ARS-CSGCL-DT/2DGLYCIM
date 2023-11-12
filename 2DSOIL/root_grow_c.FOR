@@ -4,10 +4,11 @@
       Include 'puplant.ins'
       !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, 
      !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/, /error_public/, /DataFilenames/
+     !/time_public/,/module_public/,  /DataFilenames/
       Dimension iLoc(4)
       Integer n,n1,e,SW10,SW20,SW30,SW40
-      Real*4  WeightNeighbor(4),LeftDist, RightDist, TopDist,BottomDist
+      Real*4  WeightNeighbor(4),LeftDist, RightDist,TopDist,BottomDist,
+     !		alphaR, Q10MR
       
                              
       t=sngl(Time)
@@ -35,18 +36,11 @@ C  ARE MOST FAVORABLE FOR GROWTH
 
 
 C  No Plant = No Root Activity
-      If(NShoot.eq.0.or.isGerminated.eq.0) Return
-C
+      If(NShoot.eq.0.or.isGerminated.eq.0) then       ! if nshoot=0 (before crop start and after harvest), root respiration=0
+       gSink_root=0
+      Return
+      end if 
 
-cccz zhuangji: comment this because it has been calculated in carbon_partitioning 
-C calculate potential growth in root length (DT- May not need this loop - look into this)
-c      DO 30, e=1,NumEl
-c        e1=iFavRoot(e)
-c        PDRL = PDWR(e1)/RTWL ! potential rate of change in root length cm d-1
-c        DRL(e1) = (PDRL + PPDRL(e1))*Step/2.0  ! average here
-c        PPDRL(e1) = PDRL  ! value at previous calculation time
-
-c30    CONTINUE
 
 C   Taken from ACTGRO of GLYCIM
 C   THIS PART GROWS ROOTS IN THE MOST FAVORABLE CELLS UNTIL 
@@ -118,8 +112,48 @@ cccz   node RMassY and RMassM results
       do n=1,NumNP
           TotalRootWeight=TotalRootWeight
      &      +nodeArea(n)*(RMassM(n)+RMassY(n))
-      enddo
+	enddo
 
+csun add the root respiration, two method:1) is using the Agro_IBIS
+csun Agro_IBIS:root respiration = rroot * cbior(i,k) * funcb !mol-C / m**2 / second
+csun: cbior: root biomass kg C m-2
+csun rroot   = 1.2500 / (ndaypy * 86400.0) * (1000.0 / 12.0)  ! maintenance respiration coefficient for root (/s)
+csun funcb = exp(3500.0 * (1. / 288.16 - 1. / roottemp)) !temperature function for roots
+csun funcb: calculate respiration terms on a 15 degree base following respiration parameterization of Lloyd and Taylor	
+csun: 2) using Q10 method
+
+
+csun gSink_root as [ug co2/cm3 air/day]
+csun RMassY(n) RMassM(n) root weigth in each cell g/cm^2
+
+csb  Unit of alphaR in the code is ugC/g CH2O/day 
+csun alphaR: 0.032 mg 02.g-1.h-1 to 288ug Cho.g-1.day-1 to 115 ugC/g CH2O/day This from VEEN, (1981)
+csun alphaR: 14.468 ug C.g-1.day-1  This from Agro_IBIS
+csun alphaR: 800  ugC/g CH2O/day. This is from Hybrid Maize model(Zhan et al., 2019)
+csb  alphaR: 1600 ugC/g CH2O/day. This is from Intercom Model (Kropff & Van Laar, 1993)
+csb  alphaR: Literature presents varying range of values for alphaR
+csb  alphaR: Needs calibration for the crop: All the above values are for Maize 
+
+csun Soilair(i):[cm3air/cm3soil]
+csun Tmpr(n) soil temperature
+csun Q10MR oomis and Amthor (1999) Crop Sci 39:1584-1596
+Csun need to get the air porosity through ThNew(NumNPD) 
+csun 2.65 is used as a rule of thumb based on the average bulk density of rock with no pore space.
+	
+       alphaR = 1100                              !Calibrated value for Maize crop
+	 Q10MR =2.0
+       Do i=1,NumNP
+csun young root respiration
+         gSink_rootY(i,1)=((RMassY(i))*alphaR*44.0/(12.0))*
+     &   (1/soilair(i))*(Q10MR**((Tmpr(i) - 10.0)/10.0))
+csun mature root respiration,assume half root respiration rate of young roots 	
+	   gSink_rootM(i,1)=((RMassM(i))*alphaR*0.5*44.0/(12.0))*
+     &    (1/soilair(i))*(Q10MR**((Tmpr(i) - 10.0)/10.0))
+	  
+	   gSink_root(i,1) = gSink_rootM(i,1) +	gSink_rootY(i,1)
+	   
+	 Enddo	  
+	 	
 c   Actual growth
 
 25    format (F12.6,1x,i6,2x,6G12.3,1x,2i5)

@@ -68,16 +68,28 @@ BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "USDA-ARS-ACSL"
-            VALUE "FileDescription", "MZS with genetic input used in phase 2 of ET RLS"
-            VALUE "FileVersion", "0.0.0.1"
-            VALUE "InternalName", "2DSOIL_RELEASE"
-            VALUE "LegalCopyright", "Copyright (C) 2020"
-            VALUE "OriginalFilename", "2DSOIL"
-            VALUE "ProductName", "MAIZSIM RELEASE"
-            VALUE "ProductVersion", "0.0.0.1"
-        END
+    BEGIN
+    VALUE "CompanyName", "USDA-ARS-ACSL"
+#ifdef _DEBUG			
+    VALUE "FileDescription", "GLYCIM with gas model and SOM (debug)"
+#else
+    VALUE "FileDescription", "GLYCIM with gas model and SOM (release)"
+#endif			
+    VALUE "FileVersion", "3.0.0.0"
+#ifdef _DEBUG
+    VALUE "InternalName", "2DSOIL_DEBUG"
+#else
+    VALUE "InternalName", "2DSOIL_RELEASE"
+#endif
+    VALUE "LegalCopyright", "Copyright (C) 2023"
+    VALUE "OriginalFilename", "2DSOIL"
+#ifdef _DEBUG
+    VALUE "ProductName", "GLYCIM DEBUG"
+#else
+    VALUE "ProductName", "GLYCIM RELEASE"
+#endif
+    VALUE "ProductVersion", "3.0.0.0"
+    END
     END
     BLOCK "VarFileInfo"
     BEGIN

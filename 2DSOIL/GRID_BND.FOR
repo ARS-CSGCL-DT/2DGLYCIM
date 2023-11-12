@@ -8,16 +8,43 @@ C      seepage faces are usually used in ditches.
 	Include 'PuSurface.ins'
 	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
      ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/, /error_public/, /DataFilenames/  
+     ! /module_public/,  /DataFilenames/  
 *
       Integer e
       Logical lConst
       Dimension idummy(4)
+      
 *
-cccz some parameter (constant) in the Nitvar.ins      
+cccz some parameter (constant) in the Pubsurface.ins      
+      CO2mass_2_Cmass=12.0107D0/44.01D0
       NO3mass_2_Nmass=14.0067D0/62.0049D0
       NH4mass_2_Nmass=14.0067D0/18.039D0
-	
+      
+csb: following are for converting the ppm to ugco2/cm3 air. This value needs to be added for all the gases      
+      ppm_to_ugGasCm3air(1)=509.6                            !See below text: convert the atm CO2 in [ppm]  to [ug co2/cm3 air] 
+      ppm_to_ugGasCm3air(2)=700.6                            !See below text: convert the atm O2 in [ppm]  to [ug O2/cm3 air]      
+
+!Unit conversion of [ppm] to [micro gram co2/ cm3 of air]
+!1 ppm [parts per million on a volume basis]= 1 umol CO2/mol of air
+!At STP gas occupies:  1mol/22.4 Liter = 1 mol/22400 cm3
+!1 ppm = 1 umol CO2/22400 cm3 =  4.46*10-5 umol CO2/cm3 air ? 4.56*10-5 = 1/22400  
+!1umol CO2= 44.009 ug co2
+!1ppm=4.46*10-5*44.009  ug CO2/cm3 air
+!1ppm= 1.962*10-3 ug CO2/cm3 air
+!1ppm=(1/509.6) ug CO2/cm3 air    
+      
+!For oxygen 
+!1umol O2= 32 ug O2
+!1ppm=4.46*10-5*32  ug O2/cm3 air =1428.57 ug O2 per cm3 air
+!1ppm=(1/700.6) ug O2/cm3 air 
+
+csb: Gas transfer coefficient: surface gas flux change per unit gas content in the soil air at the soil surface (cm/day)
+Csb: This value will be different for different gases
+      GasTransfCoeff(1)=11920.
+      GasTransfCoeff(2)=15400.      
+      
+      
+      
       im=20
       il=0
 *
@@ -74,8 +101,8 @@ C
 	KXB(i)=n
         CodeW(n)=idummy(1)
         CodeS(n)=idummy(2)
-        CodeT(n)=idummy(3)
-        CodeG(n)=idummy(4)
+        CodeT(n)=idummy(3)      !CodeT=1 means constant temperature
+        CodeG(n)=idummy(4)      !CodeG=1 means constant gas concentration
         Do j=1,4
           If(idummy(j).ne.0) Movers(j)=1
         Enddo
@@ -138,7 +165,7 @@ C
       Do n=1,NumNP
         ListN(n)=1
         ListNE(n)=0
-	  nodeArea(n)=0.0D0
+        nodeArea(n)=0.0D0
       Enddo
 C
 C  Area of elements and bandwidth MBand
@@ -176,7 +203,7 @@ C
             If(MB1.ne.MB) lConst=.false.
           Endif
         Enddo
-	Enddo
+      Enddo
 cccz do the computaiton of nodeArea here, moved from the carbon_partitioning      
       Do e=1,NumEl
           If(KX(e,3).eq.KX(e,4)) then
@@ -196,9 +223,9 @@ cccz do the computaiton of nodeArea here, moved from the carbon_partitioning
               nodeArea(l)=nodeArea(l)+Area(e)/4.0D0        
               nodeArea(k)=nodeArea(k)+Area(e)/4.0D0 
           Endif
-	Enddo
-	
-	
+      Enddo
+      
+      
       MBand=MBand+1
       if(MBand.gt.MBandD.or.(2*MBand-1.gt.MBandD)) lOrt=.true.
 	
@@ -216,10 +243,12 @@ C
         k=abs(CodeS(i))
         If(k.eq.3.or.k.eq.6) NVarBS=NVarBS+1
         If(abs(CodeT(i)).eq.3) NVarBT=NvarBT+1
-        If(abs(CodeG(i)).eq.3) NVarBG=NvarBG+1
+        If(abs(CodeG(i)).eq.3) NVarBG=NvarBG+1    !CodeG=3 when time dependent gas flux
+        NVarBG=0                                  ! For now since we take the boundary CO2 from the weather file itself
       Enddo
 
         NumSol=1
+        NumG=2                                    ! For now, only 2 gas is read (co2 and o2), this should be added as a input variable before reading the intial gas concentrations
         im=450
         il=0
       Open(41,File=NodeGeomFile,ERR=10)
@@ -229,6 +258,7 @@ C
         im=im+1
         Read(41,*)
         im=im+1
+        
 cccz ------------------ The Carbon/Nitrogen Component ---------------------------------
 c
 c     Nh(NumNP)   [ug/g soil]     ELEMENTAL N in soil humus
@@ -237,40 +267,56 @@ c     Nm(NumNP)   [ug/g soil]     ELEMENTAL N in soil organic fertilizer
 c     NNH4(NumNP) [ug/g soil]     Mineral N pool in the form of ammonium
 c     NNO3(NumNP) [ug/g soil]     Mineral N pool in the form of nitrate
 c
-c     CL(NumNP)   [ug/g soil]     ELEMENTAL C in soil organic matter    
+c     Cl(NumNP)   [ug/cm3]     ELEMENTAL C in the litter component of soil organic matter    
+c     Cm(NumNP)   [ug/cm3]     ELEMENTAL C in manure component of soil organic matter  
+c     Ch(NumNP)   [ug/cm3]     ELEMENTAL C in humus component of soil organic matter  
 cccz ----------------------------------------------------------------------------------
-
 
         Do j=1,NumNP
           il=il+1
           Read(41,*,ERR=10)i,Nh(i),Ch(i),NL(i),CL(i),Nm(i),Cm(i),NNH4(i)
-     &      ,(Conc(i,jjj),jjj=1,NumSol),Tmpr(i),hNew(i),RTWT(i)
-     
+     &      ,(Conc(i,jjj),jjj=1,NumSol),Tmpr(i),hNew(i),
+     &      (g(i,jjj),jjj=1,NumG), RTWT(i)                         ! g(i,jjj):Read the initial co2 concentration in the soil
           Ch_old(i)=Ch(i)
           Nh_old(i)=Nh(i)
           CL_old(i)=CL(i)
           NL_old(i)=NL(i)
           Cm_old(i)=Cm(i)
           Nm_old(i)=Nm(i)
-C     right now conc is ug NO3 per g soil. further conversions will be done in the solute mover initialization routine when we have water contents.
-c          NNO3_old(i)=Conc(i,1)  
-C   ammonia is input as ppm or ug /g soil here we convert it to ug/cm3 or mg per liter of soil volume
-c          NNH4_old(i) =  NNH4(i)*blkdn(MatNumN(i))
+C     right now conc is input as ug NO3 per g soil. further conversions will be done in the solute mover initialization routine when we have water contents.
+
+C   ammonia is input as ppm or ug /g soil 
+
 cccz --------------------------------------------------------------------------------------------------------------------
 cccz update the assignment
-cccz the unit of Conc(i,1) is "ug NO3 per g soil", will need to updated to "ug NO3 per cm^3 soil water" in solmov
-cccz the unit of NNO3_old(i) should be "ug N per g soil", converted from Conc(i,1), i.e.,
-          NNO3_old(i)=Conc(i,1)*NO3mass_2_Nmass
-cccz the unit of NNH4(i) and NNH4_OLD(i) should be "ug N per g soil", conversion needed, i.e.,
-          NNH4(i)=NNH4(i)*NH4mass_2_Nmass
+cccz the unit of Conc(i,1) is input as  "ug NO3 per g soil", will be updated 
+c        to "ug NO3 per cm^3 soil water" in solmov
+cccz the unit of Conc is initially ug/g soil of NO3. Units of NNO3_old(i) is "ug N as NO3 per cm3 volume", 
+c     multiply by BD to get ug/ cm3 volume. then by molar mass to get N
+          NNO3_old(i)=Conc(i,1)*NO3mass_2_Nmass*Blkdn(MatNumN(i))
+cdt       NNH4 is input as ug/g soil (ppm). it is converted to ug /cm3 of soil for calculations          
+cccz the unit of NNH4(i) and NNH4_OLD(i) should be "ug N per cm3 volume", conversion needed, i.e.,
+          NNH4(i)=NNH4(i)*NH4mass_2_Nmass*Blkdn(MatNumN(i))
           NNH4_old(i)=NNH4(i)
-cccz -----------------------------------------------------------------------------------------------
-          ThOld(i)=ThNew(i)
+cccz --------------------------------------------------------------------------------------------------------------------
           TmprOld(i)=Tmpr(i)
           Denit(i)=0.0D0
           Denit_old(i)=0.0D0
+          NO3_from_residue(i)=0.0D0
         Enddo
       close(41)
+      
+!Unit conversion of initial gas concentrations in the nodes  
+      
+      Do j=1,NumNP
+          Do jjj=1,NumG
+                  g(j,jjj)= g(j,jjj)/ppm_to_ugGasCm3air(jjj)   !jjj=1, CO2 gas; jjj=2, O2 gas convert the initial concentration of CO2 or O2 in [ppm]  to [ug co2 or O2 /cm3 air]               
+          end do
+      end do
+
+  
+      
+      
 ! READING FROM Nodal_N.dat alternative file.  BY GR EDN      
       Write(*,*) 'Reading Grid Done'
       Return

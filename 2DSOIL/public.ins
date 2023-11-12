@@ -26,19 +26,20 @@ cwsun - move FracClay from materials to elem_public
      !  DailyWeather,HourlyWeather,ITIME, IDAWN, IDUSK,
      !  beginDay, sowingDay, emergeDay, endDay,year, 
      !  tmpday, DayOfYear
-      character WeatherFile*256, TimeFile*256, BiologyFile*256,
+        character WeatherFile*256, TimeFile*256, BiologyFile*256,
      !          ClimateFile*256, NitrogenFile*256, SoluteFile*256,
-     !          SoilFile*256,
-     !          ManagementFile*256,DripFile*256,
+     !          ParamGasFile*256,SoilFile*256,
+     !          ManagementFile*256,IrrigationFile*256,DripFile*256,
      !          WaterFile*256, WaterBoundaryFile*256,
-     !          PlantGraphics*256,InitialsFile*256,  VarietyFile*256,
+     !          PlantGraphics*256,InitialsFile*256, VarietyFile*256,
      !          NodeGraphics*256,ElemGraphics*256,
      !          NodeGeomFile*256,
      !          GeometryFile*256,SurfaceGraphics*256,
      !          FluxGraphics*256,MassBalanceFile*256,
      !          MassBalanceFileOut*256,LeafGraphics*256,
      !          OrganicMatterGraphics*256,
-     !          RunFile*256, MassBalanceRunoffFileOut*256
+     !          RunFile*256, MassBalanceRunoffFileOut*256,
+     !          MulchFile*256,MassBalanceMulchFileOut*256
 
       Common /grid_public/  NumNP, NumEl, IJ, KAT, MBand,Nmat,
      !        KX(NumElD,4),x(NumNPD), y(NumNPD), Area(NumElD),
@@ -48,11 +49,16 @@ cwsun - move FracClay from materials to elem_public
      !       Vz(NumNPD),Q(NumNPD), Conc(NumNPD,NumSD), 
      !       g(NumNPD,NumGD), Tmpr(NumNPD), Con(NumNPD),TcsXX(NumNPD),
      !       RO(NumNPD), hNew_org(NumNPD),QAct(NumNPD),ThetaAvail, 
-     !       ThetaFull, ThAvail(NumNPD),ThFull(NMAtD),  lOrt
-      Common /elem_public/  MatNumE(NumElD),Sink(NumNPD), 
+     !       ThetaFull, ThAvail(NumNPD),ThFull(NMAtD),  lOrt,
+     !       QGas(NumNPD,NumGD),ThetaAir(NumNPD)
+      Common /elem_public/ MatNumE(NumElD),Sink(NumNPD), 
      !       cSink(NumNPD,NumSD),gSink(NumNPD,NumGD),tSink(NumNPD),
-     !       RTWT(NumNPD),RUTDEN(NumNPD),RMassM(NumNPD),RDenM(NumNPD),
-     !       RMassY(NumNPD), RDenY(NumNPD)
+     !       RTWT(NumNPD),
+     !       RMassM(NumNPD),RDenM(NumNPD),
+     !       RMassY(NumNPD), RDenY(NumNPD), 
+     !       gSink_OM(NumNPD,NumGD),
+     !       gSink_root(NumNPD,NumGD),gSink_rootY(NumNPD,NumGD),
+     !       gSink_rootM(NumNPD,NumGD)
       Common /bound_public/ NumBP, NSurf, NVarBW,NVarBS,NVarBT,NVarBG,
      !       NumSurfDat, NSeep, NSP(NSeepD), NP(NSeepD,NumSPD),
      !       NDrain,NDR(NDrainD),ND(NDrainD,NumDR),
@@ -63,15 +69,14 @@ cwsun - move FracClay from materials to elem_public
      !       VarBS(NumBPD,NumSD),VarBT(NumBPD,4),
      !       VarBG(NumBPD,NumGD,3),EO,Tpot
       Common /time_public/tNext(NumModD),dtMx(4),Time,Step,dtOpt, 
-     !        dtMin, dMul1, dMul2,  tTDB(4), Tfin,tAtm, Tinit,
+     !        dtMin, dMul1, dMul2, tTDB(4), Tfin,tAtm, Tinit,
      !        lInput,Iter,DailyOutput,HourlyOutput,RunFlag,
      !          DailyWeather,HourlyWeather, 
      !          beginDay, sowingDay, emergeDay, endDay,
      !          OutputSoilNo, OutPutSoilYes, Year,
      !           iTime, iDawn, iDusk, TimeStep,
      !            tmpday, DayOfYear
-      Common /module_public/  NumMod,Movers(4), NShoot     
-	  Common /error_public/errPlant   
+      Common /module_public/  NumMod,Movers(4), NShoot      
       Common /Solver_public/IAD(MBandD,NumNPD), IADN(NumNPD),
      !        IADD(NumNPD),A1(MBandD,NumNPD),B1(NumNPD),
      !        VRV(NumNPD),RES(NumNPD),RQI(NumNPD,MNorth),
@@ -82,15 +87,17 @@ cwsun - move FracClay from materials to elem_public
 	 
 	  Common /DataFilenames/ Starter, WeatherFile, TimeFile, 
      !          BiologyFile,ClimateFile, NitrogenFile, SoluteFile,
-     !          SoilFile, 
-     !          ManagementFile,DripFile,
+     !          ParamGasFile, SoilFile, 
+     !          ManagementFile,IrrigationFile,DripFile,
      !          WaterFile, WaterBoundaryFile, 
      !          PlantGraphics,InitialsFile,VarietyFile,
      !          NodeGraphics,ElemGraphics,NodeGeomFile,
      !          GeometryFile,SurfaceGraphics,
-     !          FluxGraphics, MassBalanceFile,MassBalanceFileOut,
-     !          LeafGraphics,OrganicMatterGraphics,
-     !          RunFile, MassBalanceRunoffFileOut
+     !          FluxGraphics, MassBalanceFile,
+     !          MassBalanceFileOut, LeafGraphics,
+     !          OrganicMatterGraphics,
+     !          RunFile, MassBalanceRunoffFileOut,
+     !          MulchFile, MassBalanceMulchFileOut
 
      
 c the following blocks are not passed to the crop model
@@ -98,6 +105,9 @@ c wsun since crop section need FractionClay, the materials block are passed to c
        Common /Nodal_pub_Aux/ ROForInfil(NumBPD)
        
        Common /Materials/BlkDn(NMatD), FracSind(NMatD), FracClay(NMatD),
-     !           FracOM(NMatD),TUpperLimit(NMatD), TLowerLimit(NMatD)
+     !           FracOM(NMatD),TUpperLimit(NMatD), TLowerLimit(NMatD),
+     !           soilair(NumNPD),thSat(NMatD),ThAMin(NMatD),ThATr(NMatD)
+       Common /ConversionFactors_parameters/ppm_to_ugGasCm3air(NumGD), 
+     !           GasTransfCoeff(NumGD)
              
 	  

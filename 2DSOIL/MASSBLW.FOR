@@ -5,7 +5,7 @@
       Include 'public.ins'
 	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
      ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/, /error_public/, /DataFilenames/  
+     ! /module_public/,  /DataFilenames/  
       Integer out_unit,PLevel
       Real Mass_out,Init_mass
       character*20 Date(50), temp

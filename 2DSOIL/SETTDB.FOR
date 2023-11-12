@@ -2,7 +2,7 @@
       Include 'public.ins'
 	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
      ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/, /error_public/, /DataFilenames/  
+     ! /module_public/,  /DataFilenames/  
       Dimension Dummy(NumSurfDatD,3)
       Common /std/im1,im2,im3,im4,il1,il2,il3,il4
       If(NVarBW.ne.0) then

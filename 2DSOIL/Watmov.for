@@ -13,8 +13,8 @@
       include 'PuSurface.ins'
       !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
      !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/, /error_public/, /DataFilenames/ 
-      Double precision A,B,C
+     !/time_public/,/module_public/,  /DataFilenames/ 
+      Double precision A,B,C, B_1, A_1
       Double precision dt,dtOld,t,tOld,PI,DPI,F2
       real ATG,HSP
 cccz move it to "PuSurface.ins" for public use 
@@ -30,24 +30,21 @@ cccz  Double precision CriticalH, CriticalH_R
       Common /WaterM/ ThOld(NumNPD),hTemp(NumNPD),hOld(NumNPD),
      !                ConAxx(NumElD),ConAzz(NumElD),ConAxz(NumElD),
      !                MaxIt,TolTh,TolH,dt,dtOld,tOld,
-     !                thR(NMatD),hSat(NMatD),thSat(NMatD),
-     !                 isat(NumBPD),FreeD
+     !                thR(NMatD),hSat(NMatD),
+     !                isat(NumBPD),FreeD
       If (lInput.eq.0) goto 11  
-       FreeD=.true.
-       CriticalH=-0.01D0
-       CriticalH_R=0.01D0
-       Do i=1,NumNP
-          hOld(i) = hNew(i)
-          hTemp(i) = hOld(i)
-          RO(i)=0.0
-       Enddo
+        FreeD=.true.
+        CriticalH=-0.01D0
+c       CriticalH_R=0.01D0
+  
+        hOld(:) = hNew(:)
+        hTemp(:) = hOld(:)
+        RO(:)=0.0
 *
-       Do i=1,NumEl
-          ConAxz(i)=0.
-          ConAxx(i)=1.
-          ConAzz(i)=1.
+        ConAxz(:)=0.
+        ConAxx(:)=1.
+        ConAzz(:)=1.
       
-      Enddo
       Explic=.false.
 *
       im=50
@@ -73,21 +70,21 @@ c  assign bulk density
      !                  BlkDn,hTemp,Explic,ThNew,hTab1,hTabN,
      !                  hSat,ThSat,ThR, ThAvail,ThFull,
      !                  FracOM, FracSind, FracClay,
-     !                  TupperLimit, TLowerLimit, SoilFile)
-c  need to initialize after assigning h values if water ws input
-        Do i=1,NumNP
-          hOld(i) = hNew(i)
-          hTemp(i) = hOld(i)
-       Enddo
+     !                  TupperLimit, TLowerLimit,soilair,
+     !                  SoilFile,ThAMin,ThATr)
+c  need to initialize arrays after assigning h values if water ws input
+     
+          hOld(:) = hNew(:)
+          hTemp(:) = hOld(:)
+      
              
       call Veloc(NumNP,NumEl,NumElD,hNew,x,y,KX,ListNE,Con,
      !                   ConAxx,ConAzz,ConAxz,Vx,Vz)
 c   Calculate Total Available Water in Profile
      
       
-      Do i = 1,NumNP
-        ThOld(i)=ThNew(i)
-      Enddo
+      ThOld(:)=ThNew(:)
+
       dt=Step
       Movers(1)=1
       Return
@@ -116,23 +113,21 @@ c   Start of iteration loop
 c     
 1111  Iter=0
       Explic=.false.
-      Do i=1,NumNP
-        Fc(i)=0.
-        Sc(i)=0.
-        ThAvail(i)=0.0
+
+        Fc(:)=0.
+        Sc(:)=0.
+        ThAvail(:)=0.0
 cccz Let us initialize the RO (runoff array) 
-        RO(i)=0.0
+        RO(:)=0.0
 cccz
-      Enddo
+
 C
 C  Recasting sinks 
 C
 
 cccz directly take the sink and nodearea 
-      Do n=1,NumNP
-         Fc(n)=Sink(n)
-         Sc(n)=NodeArea(n)
-      Enddo
+         Fc(:)=Sink(:)
+         Sc(:)=NodeArea(:)
     
 C calculate total available water in root zone.      
       ThetaFull=0.0
@@ -163,8 +158,6 @@ c*         Loop on subelements
 			 if (rtwt(l).le.1.0e-6) ThAWl=0.0
 			 ThetaFull=ThetaFull+AE*(ThAWi+ThAWj+ThAWl)/3.
 		   Enddo
-
-		   
 		Enddo
 
 C
@@ -184,12 +177,16 @@ C
      !                  BlkDn, hTemp,Explic,ThNew,hTab1,hTabN,
      !                  hSat,ThSat,ThR, ThAvail,ThFull,
      !                  FracOM, FracSind, FracClay,
-     !                  TupperLimit, TLowerLimit, SoilFile)
+     !                  TupperLimit, TLowerLimit,soilair,
+     !                  SoilFile,ThAMin,ThATr)
 
 c
 c  RESET: assembling of the matrixes
 c
       xMul=1.
+
+      !B(:)=0.
+      !F(:)=0.
       Do 212 i=1,NumNP
  
         B(i)=0.
@@ -622,7 +619,8 @@ c
      !               BlkDn, hTemp,Explic,ThNew,hTab1,hTabN,
      !               hSat,ThSat,ThR, ThAvail,ThFull,
      !               FracOM, FracSind, FracClay,
-     !               TupperLimit, TLowerLimit, SoilFile)
+     !               TupperLimit, TLowerLimit,soilair,
+     !               SoilFile,ThAMin,ThATr)
 
 
 
@@ -701,7 +699,7 @@ cccz this is the water source part, i.e., the exfiltration from soil surface
         i=SurfNodeSurfIndexH(n)
         if (hnew(k).ge.CriticalH) then
           RO(k)=max(Q(k)-Qact(k),0.0D0)
-          hNew(k)=CriticalH+h_Stay(n)         ! cccz could be CriticalH_R, but we force it to 
+          hNew(k)=CriticalH+h_Pond(n)         ! cccz could be CriticalH_R, but we force it to 
           hOld(k)=hNew(k)
         endif
        Enddo         
