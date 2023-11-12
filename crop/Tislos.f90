@@ -10,7 +10,7 @@
 	  !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/, &
 		/Weath/, /grid_public/, /nodal_public/, /elem_public/,   &
 	    /bound_public/, /time_public/, /module_public/,          &
-	    /error_public/, /DataFilenames/  
+	     /DataFilenames/  
       IF ( INIT ) THEN
          NPA = 3
          LONDAY = 0
@@ -47,7 +47,7 @@
                   IF (ILOW.LT.3.0) DAYLF = ILOW*7.0
                   IF (DAYBR(J).GT.DAYLF.AND.J.GE.ILOW) THEN
                      ABSCIS = 1
-                     WRITE (10, 112) IDAY, ILOW
+!                     WRITE (10, 112) IDAY, ILOW
                      GO TO 1111              !YA
                   END IF
                END DO
@@ -62,7 +62,7 @@
                   LONDAY = LONDAY + 1
                   IF (LONDAY.GE.5) THEN
                      LONDAY = 0
-                     WRITE (10, 113) IDAY, ILOW
+!                     WRITE (10, 113) IDAY, ILOW
                      GOTO 1111               !YAP
                   END IF
                END IF
@@ -73,7 +73,7 @@
                IF (RSTAGE.LE.6.0) GOTO 1112
                IF (DROP.EQ.0) GOTO 1112
 !YAEND
-               WRITE (10, 114) IDAY,ILOW
+!               WRITE (10, 114) IDAY,ILOW
 
 ! ABSCISE THE UNIFOLIOLATES
 
@@ -164,7 +164,7 @@
          END IF
       END IF
       RETURN
-112  FORMAT (1X,'DAY',I3,' LEAF',I3,' BRANCH PUSH')
-113  FORMAT (1X,'DAY',I3,' LEAF',I3,' MILD NITROGEN STRESS')
-114  FORMAT (1X,'DAY',I3,' LEAF',I3,' PARASITIC') 
+!112  FORMAT (1X,'DAY',I3,' LEAF',I3,' BRANCH PUSH')
+!113  FORMAT (1X,'DAY',I3,' LEAF',I3,' MILD NITROGEN STRESS')
+!114  FORMAT (1X,'DAY',I3,' LEAF',I3,' PARASITIC') 
       END

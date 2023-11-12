@@ -9,13 +9,13 @@
 	 character * 10 date1
 	 integer iday, iday1, hour
      REAL CWAD, GWAD, PWAD, LWAD, SWAD, AWAD, HIAD, SLAD, GWGD, GAD, difference
-     REAL CumulativeNUptake, CumulativeNDemand
+     REAL CumulativeNUptake, CumulativeNDemand,Pgday,Pnday
 
-     common /output_G/ CumulativeNUptake, CumulativeNDemand
+     common /output_G/ CumulativeNUptake, CumulativeNDemand,Pgday,Pnday
 	 !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/, /shtR_public/,          &
 	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	          &
 	    /bound_public/, /time_public/, /module_public/,					  &
-	    /error_public/, /DataFilenames/  
+	     /DataFilenames/  
 	    If (lInput .eq. 1) then
           CumulativeNUptake=0.0
           CumulativeNDemand=0.0
@@ -35,11 +35,11 @@
 	   IF (NSEEDS .GT. 0) GWGD = SEEDWT/NSEEDS*1000					    !Unit grain weight (mg)
 	   HIAD = SEEDWT/(LEAFWT + PETWT + STEMWT + PodWT + SeedWT)			!Harvest index at R8
 	   SLAD = LAREAT/LEAFWT											    !Specific leaf area(cm2/g)
-	   GAD  = NSEEDS*PopArea											   !Grain number(number/m2)
+	   GAD  = NSEEDS*PopArea											!Grain number(number/m2)
 	   
 	   
-	   PGROSS = PGR*1000/44						  !conversion mg CO2 m-2s-	to umol CO2 m-2 leaf s-1 
-	   PSNET = PN*1000/44						  !conversion mg CO2 m-2s-	to umol CO2 m-2 leaf s-1
+	   PGROSS = PGR*0.9818/POPAREA*(30/12)						  !conversion mg CO2 m-2 ground s-1	to g CH2O plant h-
+	   PSNET = PN*0.9818/POPAREA*(30/12)						  !conversion mg CO2 m-2 ground s-1	to g CH2O plant h-
 	   PFD = PAR(ITIME) * 4.55                    !conversion from PAR in W m-2 to umol s-1 m-2 
        POTET = transpiration*0.018*3600/PopArea   !for hourly output, Potential transpiration rate, in g h2o plant-1 h-1
        ACTET = WaterUptake/POPSLB                 !for hourly output, Actural transpiration rate, in g h2o plant-1 h-1
@@ -60,7 +60,7 @@
 	   If (ACTET.eq.0) then
 		   WSTRESS = 1.0
 	   else
-		   WSTRESS = POTET/ACTET		!Hourly water stress
+		   WSTRESS = ACTET/POTET		!Hourly water stress
 	   end if 
 	   If (WSTRESS.ge.1.0) WSTRESS = 1.0
 	   If (Cstress.ge.1.0) Cstress = 1.0
@@ -78,8 +78,8 @@
 		   Sradave = 0.0   !MJ srad m-2 timeinc-1 Daily average Solrad in 24h
 	       Tdayave = 0.0   !Daily average AIR temperature oC
 		   Tcanave = 0.0   !Daily average canopy temperature oC
-		   Pgmax = 0.0     !maximum PGROSS umol CO2 m-2 leaf s-1
-		   Pnmax = 0.0     !maximum Photosynthesis umol CO2 m-2 leaf s-1
+		   Pgday = 0.0     !daily PGROSS g CH2O plant d-1
+		   Pnday = 0.0     !daily Photosynthesis g CH2O plant d-1
 		   gsmax = 0.0     !maximum gs mmol H2O m-2 s-1
 		   psilave = 0.0   !average psil leaf water potential bars
 		   daypotet = 0.0  !potet g plant-1 h-1 daypotet g plant-1 day-1
@@ -94,8 +94,8 @@
 		   Sradave = Sradave + PFD*timeStep*60/4.57*2/1000000     !MJ srad m-2 timeinc-1
 	       Tdayave = Tdayave + TAIR(ITIME)
 		   Tcanave = Tcanave + temperature !Daily average canopy temperature oC
-		   if (PGROSS > Pgmax) Pgmax = PGROSS
-		   if (PSNET > Pnmax) Pnmax = PSNET
+		   Pgday = Pgday + PGROSS          !daily PGROSS g CH2O plant d-1
+		   Pnday = Pnday + PSNET           !daily Photosynthesis g CH2O plant d-1
 		   if (Ags > gsmax) gsmax = Ags
 		   if (TAIR(ITIME) > Tleafmax) Tleafmax = TAIR(ITIME)
 		   psilave = psilave + psil_
@@ -124,7 +124,7 @@
         call caldat(iday,mm,id,iyyy) 
         write (date1,'(i2.2,A1,i2.2,A1,i4.4)') mm,'/',id,'/',iyyy  
 		Write(85,7) date1, iday1, 23, RSTAGE, VSTAGE, Parave, Sradave,    &
-		              Tdayave, Tcanave, Pgmax, Pnmax, gsmax, psilave, LAI,		&
+		              Tdayave, Tcanave, Pgday, Pnday, gsmax, psilave, LAI,		&
 					  LAREAT, ALLWT, ROOTWT, STEMWT, LFWT, SeedWT, PodWt, ABSDW,&
 			          daypotet, dayactet, wstressave, nstressave, LIMITF(12)
 					  
@@ -274,6 +274,7 @@
       
 	  !Nitrogen.crp file
 	  !Nitrogen Daily OUTPUT 
+      !changed to output N uptake and demand to be g /plant rather than mg/plant                                   
 	   
        If((DailyOutput.eq.1).and.((difference.le.0.96).and.(difference.ge.0.95))) then
 		iday=int(time)
@@ -282,7 +283,7 @@
         write (date1,'(i2.2,A1,i2.2,A1,i4.4)') mm,'/',id,'/',iyyy  
 		Write(87,9) date1, iday1, 23, PlantNitrogen, LeafNitrogen, StemNitrogen, &
 		      PodNitrogen, SeedNitrogen, RootNitrogen, DeadNitrogen, NCRatio,	&
-              CumulativeNUptake, CumulativeNDemand, nstressave
+              CumulativeNUptake/1000.0, CumulativeNDemand/1000.0, nstressave
 					  
 	   end if 
 	  
@@ -297,7 +298,7 @@
 		  iday1=int(time)
 		  Write(87,9) date1, iday1, hour, PlantNitrogen, LeafNitrogen, StemNitrogen, &
 		      PodNitrogen, SeedNitrogen, RootNitrogen, DeadNitrogen, NCRatio,		&
-              CumulativeNUptake, CumulativeNDemand, NSTRESS
+              CumulativeNUptake/1000.0, CumulativeNDemand/1000.0, NSTRESS
 		  
 	   end if 
 	   
@@ -329,7 +330,7 @@
 	  
 7	   FORMAT (A12, (",",I8), (",",I4), 23(",",F15.3), (",",A5))
 8	   FORMAT (I4, 3(",",I4),(",",F12.1), 18(",",F6.1))
-9	   FORMAT (A12, (",",I8), (",",I4), 11(",",F15.3))	  
+9	   FORMAT (A12, (",",I8), (",",I4), 8(",",F15.3),2(",",F10.5),",",F15.3)	  
 10     FORMAT (A12, (",",I8), (",",I4), 5(",",F15.3))
 	   RETURN
  End   

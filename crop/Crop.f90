@@ -14,7 +14,7 @@
      !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/,&
 	 /Weath/, /grid_public/, /nodal_public/, /elem_public/,	   &
 	    /bound_public/, /time_public/, /module_public/,        &
-	    /error_public/, /DataFilenames/    
+	     /DataFilenames/    
 	!Write(*,*) Time 
     !***initializing crop module----------	
     If (lInput .eq. 1) then

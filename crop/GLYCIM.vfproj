@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VisualStudioProject ProjectType="typeDynamicLibrary" ProjectCreator="Intel Fortran" Keyword="Dll" Version="11.0" ProjectIdGuid="{265D4F4D-8C42-44CD-B181-2C62EA0CA771}">
+<VisualStudioProject ProjectType="typeDynamicLibrary" ProjectCreator="Intel Fortran" Keyword="Dll" Version="11.0" ProjectIdGuid="{265D4F4D-8C42-44CD-B181-2C62EA0CA771}" SccProjectName="SAK" SccLocalPath="SAK" SccAuxPath="SAK" SccProvider="SAK">
 	<Platforms>
-		<Platform Name="Win32"/></Platforms>
+		<Platform Name="Win32"/>
+	</Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32" ConfigurationType="typeDynamicLibrary">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" CallingConvention="callConventionCVF" BuildDependencies="true" EmitBuildDependencies="true" Traceback="true" BoundsCheck="true" ArrayShapeCheck="true" UninitializedVariablesCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole" LinkDLL="true" AdditionalDependencies="&quot;$(SolutionDir)photosynthesis\debug\GLYCIM_GasEx.lib&quot;"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool" CommandLine="echo f | xcopy /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)2DSOIL\Debug\$(TargetFileName)&quot;"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnShape="true" WarnInterfaces="true" FloatingPointModel="precise" RoundFloatingPointResults="true" FlushDenormalResultsToZero="true" CallingConvention="callConventionCVF" BuildDependencies="true" EmitBuildDependencies="true" Traceback="true" BoundsCheck="true" ArrayShapeCheck="true" UninitializedVariablesCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole" LinkDLL="true" AdditionalDependencies="&quot;$(SolutionDir)Photosynthesis\Debug\GLYCIM_GasEX.lib&quot;"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool" CommandLine="echo f | xcopy /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)2DSOIL\Debug\$(TargetFileName)&quot;"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
 		<Configuration Name="Release|Win32" ConfigurationType="typeDynamicLibrary">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" FloatingPointModel="precise" CallingConvention="callConventionCVF" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemWindows" LinkDLL="true" AdditionalDependencies="&quot;D:\2dglycim\Photosynthesis\Release\gasexchanger.lib&quot;"/>
-				<Tool Name="VFResourceCompilerTool"/>
-				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
-				<Tool Name="VFCustomBuildTool"/>
-				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool" CommandLine="echo f | xcopy /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)2DSOIL\Release\$(TargetFileName)&quot;&#xA;echo F|xcopy /y &quot;$(TargetPath)&quot; &quot;%userprofile%\Documents\classim\$(TargetFileName)&quot;"/>
-				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" LocalSavedScalarsZero="true" InitArrays="true" FloatingPointModel="precise" RoundFloatingPointResults="true" FlushDenormalResultsToZero="true" CallingConvention="callConventionCVF" Traceback="true" BoundsCheck="true" UninitializedVariablesCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+			<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemWindows" LinkDLL="true" AdditionalDependencies="&quot;$(SolutionDir)Photosynthesis\Release\GLYCIM_GasEx.lib&quot;"/>
+			<Tool Name="VFResourceCompilerTool"/>
+			<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+			<Tool Name="VFCustomBuildTool"/>
+			<Tool Name="VFPreLinkEventTool"/>
+			<Tool Name="VFPreBuildEventTool"/>
+			<Tool Name="VFPostBuildEventTool" CommandLine="echo f | xcopy /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)2DSOIL\Release\$(TargetFileName)&quot;&#xA;echo F|xcopy /y &quot;$(TargetPath)&quot; &quot;%userprofile%\Documents\classim\$(TargetFileName)&quot;&#xA;echo F|xcopy /y &quot;$(TargetPath)&quot; &quot;%userprofile%\Documents\classim_dev\$(TargetFileName)&quot;&#xA;echo F|xcopy /y &quot;$(TargetPath)&quot; &quot;X:\Modeling\MAIZSIMInterface\Interface programs and files\Crop Models\GLYCIM Files\$(TargetFileName)&quot;"/>
+			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
+		</Configuration>
+	</Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd">
 		<File RelativePath=".\Common.h"/>
 		<File RelativePath=".\Plant.h"/></Filter>
-		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath=".\Glycim.rc"/></Filter>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\Carbon.f90"/>
 		<File RelativePath=".\Controller.f90"/>
@@ -43,5 +48,7 @@
 		<File RelativePath=".\Root.f90"/>
 		<File RelativePath=".\Shoot.f90"/>
 		<File RelativePath=".\TIMECONV.F90"/>
-		<File RelativePath=".\Tislos.f90"/></Filter></Files>
-	<Globals/></VisualStudioProject>
+		<File RelativePath=".\Tislos.f90"/></Filter>
+	</Files>
+	<Globals/>
+</VisualStudioProject>

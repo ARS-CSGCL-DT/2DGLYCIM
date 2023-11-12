@@ -15,16 +15,19 @@
 	 !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/, /shtR_public/,&
 	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	&
 	    /bound_public/, /time_public/, /module_public/,         &
-	    /error_public/, /DataFilenames/  
+	     /DataFilenames/  
 	
    Write(*,*)'************************ GLYCIM ***********************'  
-   Write(*,*)'*                    Version 08.4.30                  *'  
+   Write(*,*)'*                    Version 9.0.1                  *'  
    Write(*,*)'*                                                     *'  
    Write(*,*)'*  A DYNAMIC SIMULATOR FOR SOYBEAN CROPS ORIGINALLY   *'  
    Write(*,*)'*  CREATED BY BASIL ACOCK AND SUBSEQUENTLY IMPROVED   *'  
    Write(*,*)'*  BY YAKOV PACHEPSKY, V.R. REDDY, DENNIS TIMLIN, AND *'  
-   Write(*,*)'*  ANTHONY TRENT.                                     *'  
-   Write(*,*)'*  USDA-ARS,REMOTE SENSING AND MODELING LABORATORY    *'  
+   Write(*,*)'*  ANTHONY TRENT.                                     *'
+   Write(*,*)'*  INCORPORATED INTO 2DSOIL AND LINKED WITH           *'
+   Write(*,*)'*    FARQUHAR PHOTOSYNTHESIS MODEL BY                 *'
+   write(*,*)'*    BY WENGUANG SUN                                  *'
+   Write(*,*)'*  USDA-ARS,ADAPTIVE CROPPING SYSTEMS LABORATORY    *'  
    Write(*,*)'*  BELTSVILLE, MD  20705.   TEL:(301)504-5872         *'   
    Write(*,*)'*******************************************************'
    

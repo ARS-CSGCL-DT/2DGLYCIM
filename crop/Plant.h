@@ -89,7 +89,8 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
 
     Integer NumSol, NumG, ListN, ListNE, MatNumN
     REAL hNew, ThNew, Vx, Vz, Q, Conc, g, Tmpr, Con, TcsXX, RO,        &
-    hNew_org, QAct, ThetaAvail, ThetaFull, ThAvail, ThFull
+    hNew_org, QAct, ThetaAvail, ThetaFull, ThAvail, ThFull,            &
+    QGas, ThetaAir
     Logical*1 lOrt
 
     Common /nodal_public/ NumSol, NumG, ListN(NumNPD), ListNE(NumNPD), &
@@ -97,25 +98,30 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
     Vz(NumNPD), Q(NumNPD), Conc(NumNPD, NumSD),                        &
     g(NumNPD, NumGD), Tmpr(NumNPD), Con(NumNPD), TcsXX(NumNPD),        &
     RO(NumNPD), hNew_org(NumNPD), QAct(NumNPD), ThetaAvail,            &
-    ThetaFull, ThAvail(NumNPD), ThFull(NMatD), lOrt
+    ThetaFull, ThAvail(NumNPD), ThFull(NMatD), lOrt,                   &
+    QGas(NumNPD, NumGD), ThetaAir(NumNPD)
 
     Integer MatNumE
     REAL Sink, cSink
-    REAL gSink, tSink, RTWT, RUTDEN, RMassM, RDenM,                    &
-    RMassY, RDenY, FracClay
+    REAL gSink, tSink, RTWT, RMassM, RDenM,                            &
+    RMassY, RDenY, gSink_OM, gSink_root,                               &
+    gSink_rootY, gSink_rootM, FracClay
 
-    Common / elem_public / MatNumE(NumElD), Sink(NumNPD),              &
-    cSink(NumNPD, NumSD), gSink(NumNPD, NumGD), tSink(NumNPD),         &
-    RTWT(NumNPD), RUTDEN(NumNPD), RMassM(NumNPD), RDenM(NumNPD),       &
-    RMassY(NumNPD), RDenY(NumNPD), FracClay(NMatD)
- 
+    Common / elem_public / MatNumE(NumElD), Sink(NumNPD),              &  
+      cSink(NumNPD, NumSD), gSink(NumNPD, NumGD), tSink(NumNPD),       &  
+      RTWT(NumNPD), RMassM(NumNPD), RDenM(NumNPD),     & 
+      RMassY(NumNPD), RDenY(NumNPD),                                   &
+      gSink_OM(NumNPD, NumGD),                                         &
+      gSink_root(NumNPD, NumGD), gSink_rootY(NumNPD, NumGD),           &
+      gSink_rootM(NumNPD, NumGD)
+
     Integer NumBP, NSurf, NVarBW, NVarBS, NVarBT, NVarBG,              &
     NumSurfDat, NSeep, NSP, NP,                                        &
     NDrain, NDR, ND, KXB
     Integer CodeW, CodeS, CodeT, CodeG, PCodeW
     REAL Width, VarBW, VarBS, VarBT, VarBG, EO, Tpot
 
-    Common / bound_public / NumBP, NSurf, NVarBW, NVarBS, NVarBT,      &
+    Common /bound_public/ NumBP, NSurf, NVarBW, NVarBS, NVarBT,        &
     NVarBG, NumSurfDat, NSeep, NSP(NSeepD), NP(NSeepD, NumSPD),        &
     NDrain, NDR(NDrainD), ND(NDrainD, NumDR),                          &
     KXB(NumBPD),                                                       &
@@ -137,7 +143,7 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
     Integer iTime, iDawn, iDusk
     Integer tmpday, DayOfYear
 
-    Common / time_public / tNext(NumModD), dtMx(4), Time, Step,        &
+    Common /time_public/ tNext(NumModD), dtMx(4), Time, Step,        &
      dtOpt,                                                            &
      dtMin, dMul1, dMul2, tTDB(4), Tfin, tAtm, Tinit,                  &
      lInput, Iter, DailyOutput, HourlyOutput, RunFlag,                 &
@@ -147,35 +153,42 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
      iTime, iDawn, iDusk, TimeStep, tmpday, DayOfYear
 
      Integer NumMod, Movers, NShoot
-     Common / module_public / NumMod, Movers(4), NShoot
+     Common /module_public/ NumMod, Movers(4), NShoot
 
-     Integer errPlant
-     Common / error_public / errPlant
-     
+         
      character WeatherFile*256, TimeFile*256, BiologyFile*256,        &
         ClimateFile*256, NitrogenFile*256, SoluteFile*256,            &
-        SoilFile*256,                                                 &
-        ManagementFile*256, DripFile*256,                             &
+        ParamGasFile*256, SoilFile*256,                               &
+        ManagementFile*256, IrrigationFile*256, DripFile*256,         &
         WaterFile*256, WaterBoundaryFile*256,                         &
         PlantGraphics*256, InitialsFile*256, VarietyFile*256,         &
         NodeGraphics*256, ElemGraphics*256,                           &
         NodeGeomFile*256,                                             &
         GeometryFile*256, SurfaceGraphics*256,                        &
-        FluxGraphics*256, OrganicMatterGraphics*256,                  &
-        MassBalanceFile*256,                                          &
+        FluxGraphics*256, MassBalanceFile*256,                        &
         MassBalanceFileOut*256, LeafGraphics*256,                     &
-        RunFile*256, MassBalanceRunoffFileOut*256
+        OrganicMatterGraphics*256,                                    &                               
+        RunFile*256, MassBalanceRunoffFileOut*256,                    &
+        MulchFile * 256, MassBalanceMulchFileOut * 256
 
-     Common / DataFilenames / Starter, WeatherFile, TimeFile,         &
+     Common /DataFilenames/ Starter, WeatherFile, TimeFile,         &
         BiologyFile, ClimateFile, NitrogenFile, SoluteFile,           &
-        SoilFile,                                                     &
-        ManagementFile, DripFile,                                     &
+        ParamGasFile, SoilFile,                                       &
+        ManagementFile, IrrigationFile, DripFile,                     &
         WaterFile, WaterBoundaryFile,                                 &
         PlantGraphics, InitialsFile, VarietyFile,                     &
         NodeGraphics, ElemGraphics, NodeGeomFile,                     &
         GeometryFile, SurfaceGraphics,                                &
-        FluxGraphics, MassBalanceFile, MassBalanceFileOut,            &
-        LeafGraphics, OrganicMatterGraphics,                          &
-        RunFile, MassBalanceRunoffFileOut
-     
+        FluxGraphics, MassBalanceFile,                                &
+        MassBalanceFileOut, LeafGraphics,                             &
+        OrganicMatterGraphics,                                        &
+        RunFile, MassBalanceRunoffFileOut,                            &
+        MulchFile, MassBalanceMulchFileOut
+
+      Common /Materials/ BlkDn(NMatD), FracSind(NMatD),             &
+        FracClay(NMatD),                                              &
+        FracOM(NMatD), TUpperLimit(NMatD), TLowerLimit(NMatD),        &
+        soilair(NumNPD), thSat(NMatD), ThAMin(NMatD),                 &
+        ThATr(NMatD)
+
      

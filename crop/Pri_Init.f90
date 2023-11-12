@@ -4,7 +4,7 @@
 	  !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/, &
 		/Weath/, /grid_public/, /nodal_public/, /elem_public/,   &
 	    /bound_public/, /time_public/, /module_public/,          &
-	    /error_public/, /DataFilenames/
+	     /DataFilenames/
 !      Pi     = 3.1415926535897932D0
 ! 	  TwoPi  = 6.2831853071795864D0
 !	  HlfPi  = 1.5707963267948966D0

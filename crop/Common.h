@@ -106,14 +106,14 @@
            ABSDW, PODWT6, RSTAGEold
 
       REAL PFD, POTET, ACTET, WaterUptake,                             &
-          Parave, Sradave, Tdayave, Tcanave, Pgmax,                    &
-          Pnmax, gsmax, psilave, daypotet, dayactet,                   &
+          Parave, Sradave, Tdayave, Tcanave,                           &
+           gsmax, psilave, daypotet, dayactet,                         &
           wstressave, nstressave, NSTRESS, WSTRESS,                    &
           Cstress, PSNET, PGROSS, netsunlitleaf, AAgs, Avtemperature,  &
           howtime, whattime, DailyBio, Tleafmax, Biomass1
       Common / EVAPOR / PFD, POTET, ACTET, WaterUptake,                &
-          Parave, Sradave, Tdayave, Tcanave, Pgmax,                    &
-          Pnmax, gsmax, psilave, daypotet, dayactet,                   &
+          Parave, Sradave, Tdayave, Tcanave,                           &
+           gsmax, psilave, daypotet, dayactet,                         &
           wstressave, nstressave, NSTRESS, WSTRESS,                    &
           Cstress, PSNET, PGROSS, netsunlitleaf, AAgs, Avtemperature,  &
           howtime, whattime, DailyBio, Tleafmax, Biomass1

@@ -35,7 +35,7 @@
 	  !DEC$ATTRIBUTES DLLEXPORT :: PNET, /ShootR/, /shtR_public/, &
 	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	  &
 	    /bound_public/, /time_public/, /module_public/,			  &
-	    /error_public/, /DataFilenames/ 
+	     /DataFilenames/ 
       REAL    LLAREA, LLFWT, LYTRES
 	  !WSUN change endday to dayend
       LOGICAL LIGHT, DAYEND       
@@ -93,7 +93,7 @@
 ! LOW LEAF NITROGEN CONTENT AND LEAF SENESCENCE ARE CALCULATED.
 
 
-         IF (NRATIO.LE.0.4) THEN
+		IF (NRATIO.LE.0.4) THEN
             REDN = 0.
          ELSE
 ! Note 7.12
@@ -130,7 +130,7 @@
 ! CALCULATE NET PHOTOSYNTHETIC RATE ALLOWING FOR STOMATAL CLOSURE
 ! Note 7.17
 !		 PN = MAX(PINDEX*SCF, 0.0)
-         PN = MAX(PINDEX, 0.0) !mg CO2 m-2s-
+         PN = MAX(PINDEX, 0.0) !mg CO2 GROUND m-2s-
 ! CALCULATE NET CARBON FIXATION RATE
 ! Note 7.18
          FIXC = PN*0.9818/POPAREA !g C plant h-
