@@ -1,0 +1,11 @@
+I was compiling this on a network drive and got an error creating the pdp file:
+1>Y:\2DGLYCIM\photosynthesis\DLL _Source\Crop.cpp : fatal error C1090: PDB API call failed, error code '5': Y:\2DGLYCIM\photosynthesis\Debug\vc143.pdb.
+there is kind of a race problem with two programs trying to access the same file, Probably one of them is some anti virus program or it could be a side by side compilation. This solved it though it puts the pdp file in your temp folder. I am not sure what effect that would have on debugging
+
+
+I found a solution on the web:
+https://developercommunity.visualstudio.com/t/fatal-error-c1090-pdb-api-call-failed-error-code-3/552999
+
+For those getting the issue with vc142.pdb try setting "Configuration Properties->C/C++->Output Files->Program Database File Name" to "$(TEMP)vc$(PlatformToolsetVersion).pdb"
+
+It could also work for the other pdb's by setting "Configuration Properties->Linker->Debugger->Generate Program Database File" to "$(TEMP)$(TargetName).pdb".
