@@ -170,7 +170,7 @@ C
 C
 C  Area of elements and bandwidth MBand
 C
-      lOrt=.false.
+      lOrt=.true.
       lConst=.true.
       MBand=1
       xMul=1.
