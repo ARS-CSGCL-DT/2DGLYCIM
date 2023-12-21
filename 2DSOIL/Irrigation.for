@@ -47,24 +47,22 @@ c
           Do i=1,Irrig_times
               tApplIrrig(i)=julday(date(i))                   ! All the dates irrigation is applied stored in tApplIrrig
           EndDo
-           
-       
+          
           Do i=1,24
               IrrigRate(i)=0.                                 ! To calculate the hourly irrigation rate every day
           Enddo
 
           if (Irrig_times.EQ.0) then
-             tNext(ModNum)=1e22
-           else
-              IrrigationApplied=IrrigationApplied+1   
-          endif
-                      ! this needs to be set to 1 to process the first irrigation event
+                tNext(ModNum)=1e22
+           else 
+                IrrigationApplied=IrrigationApplied+1 
+           endif
+                       ! this needs to be set to 1 to process the first irrigation event
           Close(40)
       Endif  ! end reading irrigation details
 
 
-*** To calculate the hourly flux value based on the daily total irrigation and avg irrigation rate/hour
-       If (Irrig_times.GT.0) then   !skip if no  irrigation (i.e., IrrigationApplied == 0)
+      If (Irrig_times.GT.0) then   !skip if no  irrigation (i.e., IrrigationApplied == 0)
         If (Abs(time-tApplIrrig(IrrigationApplied)).lt.0.001*Step) then !if day of irrigiation
          jj=IrrigationApplied
          DtIrrig=Amount_Irrig_Applied(jj)/10./AvgIrrRate*PERIOD   !gives number of hours in a day with irrigation [/10.0 to convert mm to cm]
@@ -91,7 +89,7 @@ c
    
       
 
-55    If(Abs(time-tNext(ModNum)).lt.0.001*Step) then          !If its the day and time to irrigate
+655    If(Abs(time-tNext(ModNum)).lt.0.001*Step) then          !If its the day and time to irrigate
           jj=IrrigationApplied
           if (time.LT.StopIrrig(jj)) then                     !from start to the stop time
           
@@ -104,7 +102,7 @@ c
 cccz since we treat irrigation as rainfall, we directly change the varbw terms
 cccz so varbw_air will be rainfall+irrigation
               Varbw_Air(k,1)=Varbw_Air(k,1)+IrrigRate(IrrigHour)/period
-              Varbw_Mulch(k,1)=Varbw_Mulch(k,1)+IrrigRate(IrrigHour)/period
+          Varbw_Mulch(k,1)=Varbw_Mulch(k,1)+IrrigRate(IrrigHour)/period
               VarBW(k,1)=Varbw(k,1)+IrrigRate(IrrigHour)/period
 cccz then re-calculation of Q, folloiwng VarBW and the starndard method show in weather
               VarBW_Air(k,3)=VarBW_Air(k,2)-VarBW_Air(k,1)
@@ -130,7 +128,7 @@ cccz                   if (Q(i).gt.0.0) CodeW(i)=-4   ! make sure bc changes if 
                   end if
           Endif
       End if
-                  
+      
       Return
 20    Stop 'Irrgation data error'
 

@@ -130,7 +130,7 @@ cccz directly take the sink and nodearea
          Sc(:)=NodeArea(:)
     
 C calculate total available water in root zone.      
-      ThetaFull=0.0
+      ThetaFullRZ=0.0
       Do n=1,NumEl
 		   NUS=4
 		   if(KX(n,3).eq.KX(n,4)) NUS=3
@@ -156,7 +156,7 @@ c*         Loop on subelements
 			 if (rtwt(i).le.1.0e-6) ThAWi=0.0
 			 if (rtwt(j).le.1.0e-6) ThAWj=0.0
 			 if (rtwt(l).le.1.0e-6) ThAWl=0.0
-			 ThetaFull=ThetaFull+AE*(ThAWi+ThAWj+ThAWl)/3.
+			 ThetaFullRZ=ThetaFullRZ+AE*(ThAWi+ThAWj+ThAWl)/3.
 		   Enddo
 		Enddo
 
@@ -484,7 +484,7 @@ c
         call ILU (A,NumNP,MBandD,IAD,IADN,IADD,A1)
         call OrthoMin(A,B1,B,NumNP,MBandD,NumNPD,IAD,IADN,IADD,A1,VRV,
      !                RES,RQI,RQ,QQ,QI,RQIDOT,ECNVRG,RCNVRG,ACNVRG,0,
-     !                MNorth,MaxItO)
+     !                MNorth,MaxItO,1)
 	endif
       if (.not.lOrt) then 
 c*   Reduction
@@ -659,7 +659,7 @@ cdt - calculate actual boundary fluxes to see what we have
       
 cdt - calculate available water content in root zone
 
-      ThetaAvail=0.0
+      ThetaAvailRZ=0.0
       Do n=1,NumEl
 		   NUS=4
 		   if(KX(n,3).eq.KX(n,4)) NUS=3
@@ -683,7 +683,7 @@ c*         Loop on subelements
 			 if (rtwt(i).ge.1e-6) Thi=ThAvail(i)
 			 if (rtwt(j).ge.1e-6) Thj=ThAvail(j)
 			 if (rtwt(l).ge.1e-6) Thl=Thavail(l)
-			 ThetaAvail=ThetaAvail+AE*(Thi+Thj+Thl)/3.
+			 ThetaAvailRZ=ThetaAvailRZ+AE*(Thi+Thj+Thl)/3.
 		   Enddo
 
 		   

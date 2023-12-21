@@ -45,10 +45,8 @@ c     for writing frequency to output
          im=im+1
 	read(9,5,err=6)ManagementFile
          im=im+1
-#ifdef _DEBUG
       read(9,5,err=6)IrrigationFile
          im=im+1
-#endif
       read(9,5,err=6)DripFile
          im=im+1
 	read(9,5,err=6)WaterFile
@@ -257,7 +255,5 @@ c dt
 
        extract_path = path
        end function extract_path
-      
-      
        
         

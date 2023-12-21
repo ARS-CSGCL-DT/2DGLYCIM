@@ -31,7 +31,7 @@ cwsun - move FracClay from materials to elem_public
      !          ParamGasFile*256,SoilFile*256,
      !          ManagementFile*256,IrrigationFile*256,DripFile*256,
      !          WaterFile*256, WaterBoundaryFile*256,
-     !          PlantGraphics*256,InitialsFile*256, VarietyFile*256,
+     !          PlantGraphics*256,InitialsFile*256,  VarietyFile*256,
      !          NodeGraphics*256,ElemGraphics*256,
      !          NodeGeomFile*256,
      !          GeometryFile*256,SurfaceGraphics*256,
@@ -48,8 +48,8 @@ cwsun - move FracClay from materials to elem_public
      !       MatNumN(NumNPD),hNew(NumNPD),ThNew(NumNPD), Vx(NumNPD),  
      !       Vz(NumNPD),Q(NumNPD), Conc(NumNPD,NumSD), 
      !       g(NumNPD,NumGD), Tmpr(NumNPD), Con(NumNPD),TcsXX(NumNPD),
-     !       RO(NumNPD), hNew_org(NumNPD),QAct(NumNPD),ThetaAvail, 
-     !       ThetaFull, ThAvail(NumNPD),ThFull(NMAtD),  lOrt,
+     !       RO(NumNPD), hNew_org(NumNPD),QAct(NumNPD),ThetaAvailRZ, 
+     !       ThetaFullRZ, ThAvail(NumNPD),ThFull(NMAtD),  lOrt,
      !       QGas(NumNPD,NumGD),ThetaAir(NumNPD)
       Common /elem_public/ MatNumE(NumElD),Sink(NumNPD), 
      !       cSink(NumNPD,NumSD),gSink(NumNPD,NumGD),tSink(NumNPD),
@@ -69,7 +69,7 @@ cwsun - move FracClay from materials to elem_public
      !       VarBS(NumBPD,NumSD),VarBT(NumBPD,4),
      !       VarBG(NumBPD,NumGD,3),EO,Tpot
       Common /time_public/tNext(NumModD),dtMx(4),Time,Step,dtOpt, 
-     !        dtMin, dMul1, dMul2, tTDB(4), Tfin,tAtm, Tinit,
+     !        dtMin, dMul1, dMul2,  tTDB(4), Tfin,tAtm, Tinit,
      !        lInput,Iter,DailyOutput,HourlyOutput,RunFlag,
      !          DailyWeather,HourlyWeather, 
      !          beginDay, sowingDay, emergeDay, endDay,
@@ -107,7 +107,6 @@ c wsun since crop section need FractionClay, the materials block are passed to c
        Common /Materials/BlkDn(NMatD), FracSind(NMatD), FracClay(NMatD),
      !           FracOM(NMatD),TUpperLimit(NMatD), TLowerLimit(NMatD),
      !           soilair(NumNPD),thSat(NMatD),ThAMin(NMatD),ThATr(NMatD)
+       
        Common /ConversionFactors_parameters/ppm_to_ugGasCm3air(NumGD), 
      !           GasTransfCoeff(NumGD)
-             
-	  

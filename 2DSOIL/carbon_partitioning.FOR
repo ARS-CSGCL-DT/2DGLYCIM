@@ -432,6 +432,8 @@ c when LAI !=0, then the total resistance equals to resistance in the soil plus
 c resistance of the xylum; here the xylum resistance is adopted as a constant: 6.67*1-E-3 molH2O m-2(leaf) s-1 MPa-1
 c to convert this value into the resistance value for a slab, we have to divide it by LAI and the area of the slab and 
 c convert MPa into bar, this is how we have 19.26//(LAI*rowsp)
+c WUPM is rate of water uptake by mature roots g/day
+c WUPN water uptake by new roots
             IF(LAI.EQ.0.0) Then
               WUPM(n) = (((PSIS(n) - PSILT)*nodeArea(n)
      &         *RDenM(n))/(SR(n) + RRRM + RVR(n)))
