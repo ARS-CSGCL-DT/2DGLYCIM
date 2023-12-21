@@ -89,7 +89,7 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
 
     Integer NumSol, NumG, ListN, ListNE, MatNumN
     REAL hNew, ThNew, Vx, Vz, Q, Conc, g, Tmpr, Con, TcsXX, RO,        &
-    hNew_org, QAct, ThetaAvail, ThetaFull, ThAvail, ThFull,            &
+    hNew_org, QAct, ThetaAvail, ThetaFullRZ, ThAvail, ThFull,            &
     QGas, ThetaAir
     Logical*1 lOrt
 
@@ -98,7 +98,7 @@ Parameter(NumNPD = 4000, NumElD = 3500, NumBPD = 600, NSeepD = 2,      &
     Vz(NumNPD), Q(NumNPD), Conc(NumNPD, NumSD),                        &
     g(NumNPD, NumGD), Tmpr(NumNPD), Con(NumNPD), TcsXX(NumNPD),        &
     RO(NumNPD), hNew_org(NumNPD), QAct(NumNPD), ThetaAvail,            &
-    ThetaFull, ThAvail(NumNPD), ThFull(NMatD), lOrt,                   &
+    ThetaFullRZ, ThAvail(NumNPD), ThFull(NMatD), lOrt,                   &
     QGas(NumNPD, NumGD), ThetaAir(NumNPD)
 
     Integer MatNumE
