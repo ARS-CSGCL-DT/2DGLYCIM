@@ -22,7 +22,8 @@ tmp/
 *.$$$
 *.dbg
 *.out
-*.ncb
+
+
 local.properties
 .classpath
 .settings/
@@ -99,6 +100,7 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
+*.u2d
 
 # Visual Studio profiler
 *.psess
@@ -243,6 +245,9 @@ Soil Source/CopyToTestVer.bat
 *.ncb
 *.suo
 *.dbg
+*.u2d
+$tf1/
+$tf/
 .vs
 2dsoil.exe
 crop.dll
