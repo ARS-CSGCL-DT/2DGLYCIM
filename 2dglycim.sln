@@ -68,5 +68,14 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {48C1D4AA-A9A7-47C5-A21B-3FFA584BD7D9}
 	EndGlobalSection
-	
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://arsmdbe3320dta.usda.net/tfs/plantmodel
+		SccProjectUniqueName0 = crop\\GLYCIM.vfproj
+		SccProjectName0 = $/GLYCIM-2DSOIL/Plant
+		SccAuxPath0 = https://arsmdbe3320dta.usda.net/tfs/plantmodel
+		SccLocalPath0 = crop
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
 EndGlobal
