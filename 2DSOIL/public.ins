@@ -19,14 +19,18 @@ cwsun - move FracClay from materials to elem_public
      
       Real BlkDn, FracSind, FracClay, FracOM, hCritS,hCritA
 	  Real nodeArea
+      REAL Sink, cSink, gSink, tSink, RTWT,  RDenM,                                   
+     !   RMassY, RDenY, gSink_OM, gSink_root, gsink_N2O, gSink_rootY,         
+     !   gSink_rootM
       Integer CodeW,CodeS,CodeT,CodeG,errPlant
-	  Integer MaxItO, OutPutSoilNo, OutPutSoilYes   
+	  Integer    MaxItO, OutPutSoilNo, OutPutSoilYes
       Logical*1 lOrt
       Integer DailyOutput, HourlyOutput,RunFlag,  
      !  DailyWeather,HourlyWeather,ITIME, IDAWN, IDUSK,
      !  beginDay, sowingDay, emergeDay, endDay,year, 
-     !  tmpday, DayOfYear
-        character WeatherFile*256, TimeFile*256, BiologyFile*256,
+     !  tmpday, DayOfYear, ponding,
+     !  PondingByHead, PondingByFlux
+      Character WeatherFile*256, TimeFile*256, BiologyFile*256,
      !          ClimateFile*256, NitrogenFile*256, SoluteFile*256,
      !          ParamGasFile*256,SoilFile*256,
      !          ManagementFile*256,IrrigationFile*256,DripFile*256,
@@ -58,7 +62,7 @@ cwsun - move FracClay from materials to elem_public
      !       RMassY(NumNPD), RDenY(NumNPD), 
      !       gSink_OM(NumNPD,NumGD),
      !       gSink_root(NumNPD,NumGD),gSink_rootY(NumNPD,NumGD),
-     !       gSink_rootM(NumNPD,NumGD)
+     !       gSink_rootM(NumNPD,NumGD), gSink_N2O(NumNPD,NumGD)
       Common /bound_public/ NumBP, NSurf, NVarBW,NVarBS,NVarBT,NVarBG,
      !       NumSurfDat, NSeep, NSP(NSeepD), NP(NSeepD,NumSPD),
      !       NDrain,NDR(NDrainD),ND(NDrainD,NumDR),
@@ -67,7 +71,8 @@ cwsun - move FracClay from materials to elem_public
      !       PCodeW(NumNPD),Width(NumBPD),
      !       VarBW(NumBPD,3),
      !       VarBS(NumBPD,NumSD),VarBT(NumBPD,4),
-     !       VarBG(NumBPD,NumGD,3),EO,Tpot
+     !       VarBG(NumBPD,NumGD,3),EO,Tpot,
+     !       pondingByHead, pondingByFlux
       Common /time_public/tNext(NumModD),dtMx(4),Time,Step,dtOpt, 
      !        dtMin, dMul1, dMul2,  tTDB(4), Tfin,tAtm, Tinit,
      !        lInput,Iter,DailyOutput,HourlyOutput,RunFlag,
@@ -104,9 +109,9 @@ c the following blocks are not passed to the crop model
 c wsun since crop section need FractionClay, the materials block are passed to crop
        Common /Nodal_pub_Aux/ ROForInfil(NumBPD)
        
-       Common /Materials/BlkDn(NMatD), FracSind(NMatD), FracClay(NMatD),
+       Common /Materials/BlkDn(NMatD),FracSind(NMatD), FracClay(NMatD),
      !           FracOM(NMatD),TUpperLimit(NMatD), TLowerLimit(NMatD),
      !           soilair(NumNPD),thSat(NMatD),ThAMin(NMatD),ThATr(NMatD)
        
-       Common /ConversionFactors_parameters/ppm_to_ugGasCm3air(NumGD), 
+       Common /ConversionFactors_parameters/ugGasCm3air_to_ppm(NumGD), 
      !           GasTransfCoeff(NumGD)

@@ -23,7 +23,7 @@
      !         wAppl(Max_times), Drip_times,
      !         Num_nodes(Max_nodes), nAppl(Max_times, Max_nodes),
      !         applied,ModNum
-      t=time
+       t=time
       If(lInput.eq.1) then
         Open(40,file=DripFile,err=20)
         Read(40,*,Err=20) 

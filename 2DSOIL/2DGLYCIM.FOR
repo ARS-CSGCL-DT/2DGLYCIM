@@ -35,6 +35,9 @@ C SetSurfaceH --  reading hourly weather
      !   ((HourlyWeather+DailyWeather).eq.0))then
               Write (*,*) "error in weather file type"
         Endif
+        if (time>38533.8) then
+          iii=1
+        endif
       if (HourlyWeather.eq.1) Call SetSurfaceH()
       if (DailyWeather.eq.1) Call SetSurfaceD()                         
       Call SetTDB()
@@ -44,10 +47,8 @@ C SetSurfaceH --  reading hourly weather
 	Call TillageProcess
 c	Call Drip()
 
-      !Starter=1.0D0
-      !Call CROP(PCRL,MSW1, NumNP,NumSol,Sink(1),
-   !  !      !NumBP,TNext(1),NumMod,Starter)
 ccc wsun here to call Glycim crop subrountine as a dll
+
 	Call crop()     
 	Call Carbon_Partitioning()   
       Call Rootgrow()

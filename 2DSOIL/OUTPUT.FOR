@@ -146,7 +146,7 @@ C declare files for output
 c NodeGrpahics       
       Write(81,5) "Date_time,", "Date,", "X,", "Y,", "hNew,","thNew,",
      &  "Vx,", "Vy,", "Q,", "NO3N,", "NH4N,","Temp,","Area,", 
-     &  "CO2Conc," , "O2Conc"
+     &  "CO2Conc," , "O2Conc", "N2OConc"
 
 c Element Graphics     
       Write(82,6) "Date_time,", "Date,", "X,", "Y,", "Node,", 
@@ -159,7 +159,7 @@ C G05 file  Surface Graphics
      &       "N_Leach,","Runoff,",
      &      "cover,","PSIM,", "SeasPSoEv,","SeasASoEv," ,"SeasPTran,",
      &      "SeasATran,","SeasRain,",    
-     &      "SeasInfil,","ThetaAvail,","CO2FLux,","O2FLux"
+     &      "SeasInfil,","ThetaAvail,","CO2FLux,","O2FLux","N2OFLux"
 
 c Flux Graphics       
        Write(84,20) "Date_time,", "Date,","Flux,","SoilEA,",
@@ -270,13 +270,16 @@ C  pressure head and flux is calculated CodeW >0 indicates head is set at 0 and 
 	     n=KXB(i)
 	     
 C calculate N flux in drainage, only consider flow out of the domain (<0) units are g N/cm2 (convert from ug)	     
-	     if ((CodeW(n).eq.(-7)).or.(CodeW(n).eq.(2))
+C make sure that the drainage is only calculated for the bottom boundary
+	  if (n.gt.nSurf) then   
+             if ((CodeW(n).eq.(-7)).or.(CodeW(n).eq.(2))
      &             .or.(CodeW(n).eq.(1))) then
 	        Flux_drain=Flux_drain+Q(n)*step
               nitrogenflux=nitrogenflux+min(0.0,Q(n))
      &             *conc(n,1)*step*NO3mass_2_Nmass/1.0e6              ! g N/cm2
       
-           endif
+             endif
+          endif
 c case for evaporation
 
 cccz changed varbw to Varbw_Air
@@ -284,11 +287,12 @@ cccz changed varbw to Varbw_Air
             ActualSoilEvap=ActualSoilEvap-min(0.0,Q(n))*step
           endif
 c case for rainfall
-          if (abs(CodeW(n)).eq.4) then
+           if (abs(CodeW(n)).eq.4.or.((pondingByFlux.OR.
+     &         pondingByHead).eq.1)) then
             ActualInfil=ActualInfil+max(0.0,Qact(n))*step
             ActualInfil_03=ActualInfil_03+max(0.0,Qact(n))*step
 cccz calculation of runoff
-            Runoff=Runoff+RO(n)*step
+            Runoff=Runoff+max(Q(i)-Qact(i),0.0D0)*step
             
 cccz the calculation of runoff_03 is relatively complicated
 cccz      first do the input flow, the amound of water from upper stream should be Q-varbw_record (infiltration-rainfall)
@@ -348,7 +352,7 @@ cccz calculation is done, just do an assignment
         write (date,'(i2.2,A1,i2.2,A1,i4.4)') mm,'/',id,'/',iyyy  
           Call ArrNodOut (Date,x,y,NumNP,t,hNew,
      !      ThNew,vz,vx,Q,Conc(1,1),NNH4,Tmpr,g(1,1), g(1,2),
-     !      ppm_to_ugGasCm3air,NumG, NodeArea)
+     !      g(1,3),ugGasCm3air_to_ppm,NumG, NodeArea)
         iitime=int(time)
         diff=abs(time-int(time))
         If((NShoot.ne.0).and.(diff.ge.0.999.or.diff.le.0.001))
@@ -420,6 +424,7 @@ cccz the averaged process for actual infiltraiton
               ActualInfil_03=ActualInfil_03/gridWidth*10.0
               
 cccz the averaged process for runoff
+              Runoff = Runoff/gridWidth*10.0
               Runoff_02=Runoff_02/gridWidth*10.0
               Runoff_03=Runoff_03/gridWidth*10.0  
 cccz
@@ -562,11 +567,11 @@ C10    Call errmes(im,il)
 C format 5 is water, 6 is roots Vy is the last on on this lin
   5   Format (1x,A12, T20,A7,T37,A2,T47,A2, T56,A5,T68,A6,T82,A3,T94,
      &     A3,T105,A2, T117, A6, T129, A6, T141, A5, 
-     &     T152, A5,T165,A8,T176,A8 )   ! format for nodal data header
+     &     T152, A5,T165,A8,T176,A8,T184,A9 )   ! format for nodal data header
   6   Format (1x,A16,T20,A5,T36,A2,T46,A2,T56,A5,T65,A7,T78,A7, T90,A6,
      &        T102, A6, T112, A11, T124, A8, T136, A8)
  10   Format (1x,F17.6,',', A15,',',9(F16.3, ','), F14.5, ',',                  !relative water content  
-     &        11(F16.3, ','),F16.3)  !format for flux data  [G03]
+     &        12(F16.3, ','),F16.3)  !format for flux data  [G03]
  13   Format (1x,F17.6,',',A15,',',15(F16.3, ','), F16.3)  ! format for second flux data [G06]
  20   Format (1x,25A16)              !format for flux header [G05]
  21   Format (1x,12A16)           ! format for Organic Matter header
@@ -599,27 +604,28 @@ C      Endif
 C/***************************************************/
       subroutine ArrNodOut(Date,x,y,NumNP,t, Head,      
      !          ThetaArr, vzArr,vxArr,QArr,ConcArr,NH4Arr,TemprArr,
-     !          gArr1,gArr2,ppm_to_ugGasCm3air, NumG,areaArr)
+     !          gArr1,gArr2,gArr3,ugGasCm3air_to_ppm, NumG,areaArr)
       Character*10 Date
       Real x,y,t,Head,ThetaArr,vzArr,vxArr,QArr,ConcArr,NH4Arr,TemprArr,
-     !      gArr1,gArr2, ppm_to_ugGasCm3air, areaArr
+     !      gArr1,gArr2,gArr3,ugGasCm3air_to_ppm, areaArr
       Integer NumNP,NumG, n
 
       Dimension Head(NumNP),x(NumNP),y(NumNP),
      !         ThetaArr(NumNP), vzArr(NumNP),vxArr(NumNP),QArr(NumNP),
      !         ConcArr(NumNP),TemprArr(NumNP),NH4Arr(NumNP),
-     !         gArr1(NumNP), gArr2(NumNP),ppm_to_ugGasCm3air(NumG),
-     !         areaArr(NumNP)
+     !         gArr1(NumNP), gArr2(NumNP), gArr3(NumNP),
+     !         ugGasCm3air_to_ppm(NumG), areaArr(NumNP)
         !MyDate=ToCalendarDate(mm,id,iyyy)
         Do n=1,NumNP
           Write(81,140)t, date, x(n),y(n),Head(n),ThetaArr(n),
      !     vzArr(n),vxArr(n),QArr(n),ConcArr(n),NH4Arr(n), 
      !     TemprArr(n), areaArr(n),
-     !     gArr1(n)*ppm_to_ugGasCm3air(1),
-     !     gArr2(n)*ppm_to_ugGasCm3air(2) 
+     !     gArr1(n)*ugGasCm3air_to_ppm(1),
+     !     gArr2(n)*ugGasCm3air_to_ppm(2), 
+     !     gArr3(n)*ugGasCm3air_to_ppm(3)
           !convert the initial concentration of CO2 and O2 in [ug/cm3 air] to ppm
         Enddo
- 140   format(1x, f14.6,',', a12,',', 2(f11.2,','),10(G11.3,','),G11.3)
+ 140   format(1x, f14.6,',', a12,',', 2(f11.2,','),11(G11.3,','),G11.3)
       Return
       End
   

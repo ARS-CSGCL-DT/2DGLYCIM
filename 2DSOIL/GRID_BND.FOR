@@ -21,8 +21,8 @@ cccz some parameter (constant) in the Pubsurface.ins
       NH4mass_2_Nmass=14.0067D0/18.039D0
       
 csb: following are for converting the ppm to ugco2/cm3 air. This value needs to be added for all the gases      
-      ppm_to_ugGasCm3air(1)=509.6                            !See below text: convert the atm CO2 in [ppm]  to [ug co2/cm3 air] 
-      ppm_to_ugGasCm3air(2)=700.6                            !See below text: convert the atm O2 in [ppm]  to [ug O2/cm3 air]      
+      ugGasCm3air_to_ppm(1)=509.6                            !See below text: convert the atm CO2 in [ppm]  to [ug co2/cm3 air] 
+      ugGasCm3air_to_ppm(2)=700.6                            !See below text: convert the atm O2 in [ppm]  to [ug O2/cm3 air]      
 
 !Unit conversion of [ppm] to [micro gram co2/ cm3 of air]
 !1 ppm [parts per million on a volume basis]= 1 umol CO2/mol of air
@@ -245,7 +245,7 @@ C
       Enddo
 
         NumSol=1
-        NumG=2                                    ! For now, only 2 gas is read (co2 and o2), this should be added as a input variable before reading the intial gas concentrations
+        NumG=3                                    ! For now, only 2 gas is read (co2 and o2), this should be added as a input variable before reading the intial gas concentrations
         im=450
         il=0
       Open(41,File=NodeGeomFile,ERR=10)
@@ -274,6 +274,7 @@ cccz ---------------------------------------------------------------------------
           Read(41,*,ERR=10)i,Nh(i),Ch(i),NL(i),CL(i),Nm(i),Cm(i),NNH4(i)
      &      ,(Conc(i,jjj),jjj=1,NumSol),Tmpr(i),hNew(i),
      &      (g(i,jjj),jjj=1,NumG), RTWT(i)                         ! g(i,jjj):Read the initial co2 concentration in the soil
+          !RTWT(i)=RTWT(i)*1.0
           Ch_old(i)=Ch(i)
           Nh_old(i)=Nh(i)
           CL_old(i)=CL(i)
@@ -307,7 +308,7 @@ cccz ---------------------------------------------------------------------------
       
       Do j=1,NumNP
           Do jjj=1,NumG
-                  g(j,jjj)= g(j,jjj)/ppm_to_ugGasCm3air(jjj)   !jjj=1, CO2 gas; jjj=2, O2 gas convert the initial concentration of CO2 or O2 in [ppm]  to [ug co2 or O2 /cm3 air]               
+                  g(j,jjj)= g(j,jjj)/ugGasCm3air_to_ppm(jjj)   !jjj=1, CO2 gas; jjj=2, O2 gas convert the initial concentration of CO2 or O2 in [ppm]  to [ug co2 or O2 /cm3 air]               
           end do
       end do
 

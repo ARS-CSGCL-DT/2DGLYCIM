@@ -81,7 +81,7 @@ C**                                                                   **
       Parameter (PERIOD =1./24.)
 c wsun put day of year in the common block (time_public)
       integer jday, m, CurYear, ModNum,ThisYear
-      Common /weather/ il,im,isol,ModNum, TMAX,Gamma,
+      Common /weather/ il,im,isol,ModNum, TMAX,Gamma_psy,
      &   BEERS(24)
       
       double precision St,t
@@ -1145,14 +1145,14 @@ c................... Gas movement
         do jjj=1,NumG
           VarBG(i,jjj,2)=GasTransfCoeff(jjj)                !GasTransfCoeff(jjj) : is the conductance of surface air layer to gas flow or rate constant of the gas exchange between the soil and the atmosphere [cm/day]
           VarBG(i,jjj,3)=GasTransfCoeff(jjj) 
-     !       *GAIR(jjj)/ppm_to_ugGasCm3air(jjj)             ! convert the initial concentration of CO2 in [ppm]  to [ug co2/cm3 air] !GAIR: is the atmospheric CO2 concentration [ppm], see conversion details in grid_bnd
-          VarBG(i,jjj,1)= GAIR(jjj)/ppm_to_ugGasCm3air(jjj) ! convert the initial concentration of CO2 in [ppm]  to [ug co2/cm3 air] !This is if BC=4, is gas content instead of flux, 
+     !       *GAIR(jjj)/ugGasCm3air_to_ppm(jjj)             ! convert the initial concentration of CO2 in [ppm]  to [ug co2/cm3 air] !GAIR: is the atmospheric CO2 concentration [ppm], see conversion details in grid_bnd
+          VarBG(i,jjj,1)= GAIR(jjj)/ugGasCm3air_to_ppm(jjj) ! convert the initial concentration of CO2 in [ppm]  to [ug co2/cm3 air] !This is if BC=4, is gas content instead of flux, 
         Enddo
       Endif
       if (K.eq.1.or.K.eq.3.or.k.eq.6) then
           do jjj=1,NumG
               VarBG(i,jjj,2)=GasTransfCoeff(jjj)  
-              VarBG(i,jjj,1)= GAIR(jjj)/ppm_to_ugGasCm3air(jjj)          ! convert the atm CO2 in [ppm]  to [ug co2/cm3 air]       
+              VarBG(i,jjj,1)= GAIR(jjj)/ugGasCm3air_to_ppm(jjj)          ! convert the atm CO2 in [ppm]  to [ug co2/cm3 air]       
           end do
       end if
       Enddo
