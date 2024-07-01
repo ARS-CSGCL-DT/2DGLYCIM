@@ -75,20 +75,20 @@ BEGIN
 #else
     VALUE "FileDescription", "GLYCIM with gas model and SOM (release)"
 #endif			
-    VALUE "FileVersion", "3.0.0.0"
+    VALUE "FileVersion", "3.1.0.0"
 #ifdef _DEBUG
     VALUE "InternalName", "2DSOIL_DEBUG"
 #else
     VALUE "InternalName", "2DSOIL_RELEASE"
 #endif
-    VALUE "LegalCopyright", "Copyright (C) 2023"
+    VALUE "LegalCopyright", "Copyright (C) 2024"
     VALUE "OriginalFilename", "2DSOIL"
 #ifdef _DEBUG
     VALUE "ProductName", "GLYCIM DEBUG"
 #else
     VALUE "ProductName", "GLYCIM RELEASE"
 #endif
-    VALUE "ProductVersion", "3.0.0.0"
+    VALUE "ProductVersion", "3.1.0.0"
     END
     END
     BLOCK "VarFileInfo"

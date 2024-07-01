@@ -6,11 +6,10 @@
  SUBROUTINE Initialize
 	 INCLUDE 'common.h'
 	 Include 'plant.h'
-	 Character InString1*120, location*120, location1*12,       &
-	 nitrogencrp*156, nitrogencrp1*156, location2*15,		    &
-	 plantstresscrp*156, plantstresscrp1*156
-	 INTEGER index, declen, len, last, trim
-	 integer*4 i,ls1,ls2,ps1,ps2
+	 Character InString1*120,                                   &
+	 nitrogencrp*256, plantstresscrp*256
+     Character*256 extract_path, path
+	 
     
 	 !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/, /shtR_public/,&
 	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	&
@@ -18,7 +17,7 @@
 	     /DataFilenames/  
 	
    Write(*,*)'************************ GLYCIM ***********************'  
-   Write(*,*)'*                    Version 9.0.1                  *'  
+   Write(*,*)'*                    Version 9.1.0                    *'  
    Write(*,*)'*                                                     *'  
    Write(*,*)'*  A DYNAMIC SIMULATOR FOR SOYBEAN CROPS ORIGINALLY   *'  
    Write(*,*)'*  CREATED BY BASIL ACOCK AND SUBSEQUENTLY IMPROVED   *'  
@@ -27,8 +26,9 @@
    Write(*,*)'*  INCORPORATED INTO 2DSOIL AND LINKED WITH           *'
    Write(*,*)'*    FARQUHAR PHOTOSYNTHESIS MODEL BY                 *'
    write(*,*)'*    BY WENGUANG SUN                                  *'
-   Write(*,*)'*  USDA-ARS,ADAPTIVE CROPPING SYSTEMS LABORATORY    *'  
-   Write(*,*)'*  BELTSVILLE, MD  20705.   TEL:(301)504-5872         *'   
+   Write(*,*)'*  USDA-ARS,ADAPTIVE CROPPING SYSTEMS LABORATORY      *'  
+   Write(*,*)'*  BELTSVILLE, MD  20705.   TEL:(301)504-5872         *1
+   write(*,*)'*                                                     *'   
    Write(*,*)'*******************************************************'
    
    !Read variety file 
@@ -57,34 +57,12 @@
 	  Open(85,file=PlantGraphics)  
 	  Open(86,file=LeafGraphics)
 	  
-	
-      declen = len(PlantGraphics)
-	  last = index(PlantGraphics, '\', back=.true.)
-	  location=PlantGraphics(1:last)
-	  location=trim(location)
-	  location1='nitrogen.crp'
-	  location2='plantstress.crp'
-	  nitrogencrp1=location//location1
-	  plantstresscrp1=location//location2
+	  Path=extract_path(PlantGraphics)
+      
+	  nitrogencrp=trim(Path)//'nitrogen.crp'
+	  plantstresscrp=trim(Path)//'plantstress.crp'
 	  
-      ls1 = len_trim(nitrogencrp1)
-      ls2 = 0
-      do i = 1,ls1
-        if(nitrogencrp1(i:i).ne.' ') then
-           ls2 = ls2 + 1
-           nitrogencrp(ls2:ls2) = nitrogencrp1(i:i)
-        endif
-	  enddo
-	  
-	  ps1 = len_trim(plantstresscrp1)
-      ps2 = 0
-      do i = 1,ps1
-        if(plantstresscrp1(i:i).ne.' ') then
-           ps2 = ps2 + 1
-           plantstresscrp(ps2:ps2) = plantstresscrp1(i:i)
-        endif
-      enddo
-	   
+      	   
 	  Open(87,file=nitrogencrp)
 	  Open(88,file=plantstresscrp)
 	  
@@ -114,3 +92,28 @@
 11	  CONTINUE	         
 
    END
+   
+   
+       function extract_path(filename)
+       character *256 filename, path, extract_path
+       integer :: i, len
+
+       len = len_trim(filename)
+       path = ""
+    ! Find the last occurrence of the directory separator '\'
+       
+       do i = len, 1, -1
+          if ((filename(i:i) == '\').OR.(filename(i:i) == '/')) then
+              path = filename(1:i)
+              if (filename(i:i) == '/') then   ! if windows
+                  path=path // '/'
+               else 
+                 path=path // '\'               ! if linux
+              end if
+             exit
+          end if
+       end do
+
+       extract_path = path
+       end function extract_path
+       
