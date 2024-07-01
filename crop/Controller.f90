@@ -27,7 +27,7 @@
    Write(*,*)'*    FARQUHAR PHOTOSYNTHESIS MODEL BY                 *'
    write(*,*)'*    BY WENGUANG SUN                                  *'
    Write(*,*)'*  USDA-ARS,ADAPTIVE CROPPING SYSTEMS LABORATORY      *'  
-   Write(*,*)'*  BELTSVILLE, MD  20705.   TEL:(301)504-5872         *1
+   Write(*,*)'*  BELTSVILLE, MD  20705.   TEL:(301)504-5872         *'
    write(*,*)'*                                                     *'   
    Write(*,*)'*******************************************************'
    
