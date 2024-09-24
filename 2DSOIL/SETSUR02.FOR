@@ -59,7 +59,7 @@ C**  WIND-  windspeed at 2 meters (km hr-1).                          **
 C**                                                                   **
 C**  RH-    Relative Humidity, (%, i.e., 90.2)                        **
 C**                                                                   **
-C**  IRAV-  avg Rainfall intensity for the day, (mm/day, hr?)              **
+C**  IRAV-  avg Rainfall intensity for the day, (cm/hr)               **
 C**                                                                   **
 C**  TWET-  wet bulb temperature (oC).                                **
 C**                                                                   **
@@ -75,9 +75,7 @@ C**                                                                   **
       Include 'puplant.ins'
       Include 'puweath.ins'
       Include 'PuSurface.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/
+
       Parameter (PERIOD =1./24.)
 c wsun put day of year in the common block (time_public)
       integer jday, m, CurYear, ModNum,ThisYear
@@ -116,6 +114,14 @@ cccz initialized surface water income
          Varbw_Mulch(i,3)=0.0D0 
       enddo
       
+
+csb: Gas transfer coefficient: surface gas flux change per unit gas content in the soil air at the soil surface (cm/day)
+Csb: This value will be different for different gases
+      GasTransfCoeff(1)=11920.
+      GasTransfCoeff(2)=15400.      
+      GasTransfCoeff(3)=12355.
+      
+            
       NumMod=NumMod+1
       ModNum=NumMod
       tNext(ModNum) = time
@@ -334,6 +340,8 @@ c         Rel_Humid=CLIMAT(5)
            GAIR(2)=209000    !this is the atmospheric O2 concentration in ppm  
 csb O2 content of air=20.95% by volume, ie; 100 parts of air=20.95 parts of O2
 csb 1 part of air=0.2095 parts of O2. in 10^6 parts of air=0.2095*10^6=209000 ppm
+           GAIR(3)=0.332    !this is the atmospheric N2O concentration in ppm  [IPCC 2021,Technical summary]
+csb N2O concentration in atm 332 ppb=0.33 ppm 
           
 
 Cdt
@@ -802,16 +810,20 @@ C
 C
 c..................Daily calculations for the precipitation
 C
+! dtRain is time in days to it takes for this amount to rain using the average hourly rainfall rate (IR)
+! check to see if this amount will be reached in the current hour
+! if it is too much for the hour, then the excess is carried over to the next hour
+! note that RINT has to be a 24 hour rainfall rate - cm/day. it is input as cm over the hour.
 
         If(Rain.ge.0.) then
           DtRain=RAIN/IR
           Do i=24,1,-1
-            If(DtRain.ge.PERIOD) then
-              RINT(i)=IR
-              dtRain=dtRain-PERIOD
+            If(DtRain.ge.PERIOD*24.0) then
+              RINT(i)=IR*24.0
+              dtRain=dtRain-PERIOD*24.0
             Else
 cdt changed this from dtrain/ir 11/14/96
-              RINT(i)=DtRain*IR/period
+              RINT(i)=DtRain*IR*24.0
               goto 55
             Endif
           Enddo

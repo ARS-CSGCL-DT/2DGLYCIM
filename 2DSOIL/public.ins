@@ -1,6 +1,15 @@
 cdt ToDo - simplyfy common blocks so only variables needed in plant model
 cdt ToDo May 2016 added VarBW_old for debugging purposes can be removed later
 c   will be transferred.  
+      !DEC$ ATTRIBUTES DLLIMPORT::/module_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/bound_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/DataFilenames/
+      !DEC$ ATTRIBUTES DLLIMPORT::/time_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/grid_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/nodal_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/elem_public/
+      !DEC$ ATTRIBUTES DLLIMPORT::/materials/
+      
 cwsun - in the time_public to add tmpday and dayofyear to transfer to crop section
 cwsun - in the materials block FracClay(NMatD) need to transfer to crop section (phenology)
 cwsun - move FracClay from materials to elem_public
@@ -18,19 +27,19 @@ cwsun - move FracClay from materials to elem_public
 	  Double precision Starter, TimeStep
      
       Real BlkDn, FracSind, FracClay, FracOM, hCritS,hCritA
-	  Real nodeArea
+	  Real nodeArea, gridWidth
       REAL Sink, cSink, gSink, tSink, RTWT,  RDenM,                                   
      !   RMassY, RDenY, gSink_OM, gSink_root, gsink_N2O, gSink_rootY,         
      !   gSink_rootM
       Integer CodeW,CodeS,CodeT,CodeG,errPlant
-	  Integer    MaxItO, OutPutSoilNo, OutPutSoilYes
+	  Integer MaxItO, OutPutSoilNo, OutPutSoilYes
       Logical*1 lOrt
       Integer DailyOutput, HourlyOutput,RunFlag,  
      !  DailyWeather,HourlyWeather,ITIME, IDAWN, IDUSK,
      !  beginDay, sowingDay, emergeDay, endDay,year, 
      !  tmpday, DayOfYear, ponding,
      !  PondingByHead, PondingByFlux
-      Character WeatherFile*256, TimeFile*256, BiologyFile*256,
+      character WeatherFile*256, TimeFile*256, BiologyFile*256,
      !          ClimateFile*256, NitrogenFile*256, SoluteFile*256,
      !          ParamGasFile*256,SoilFile*256,
      !          ManagementFile*256,IrrigationFile*256,DripFile*256,
@@ -71,7 +80,7 @@ cwsun - move FracClay from materials to elem_public
      !       PCodeW(NumNPD),Width(NumBPD),
      !       VarBW(NumBPD,3),
      !       VarBS(NumBPD,NumSD),VarBT(NumBPD,4),
-     !       VarBG(NumBPD,NumGD,3),EO,Tpot,
+     !       VarBG(NumBPD,NumGD,3),EO,Tpot,gridWidth,
      !       pondingByHead, pondingByFlux
       Common /time_public/tNext(NumModD),dtMx(4),Time,Step,dtOpt, 
      !        dtMin, dMul1, dMul2,  tTDB(4), Tfin,tAtm, Tinit,

@@ -17,9 +17,6 @@
       Include 'public.ins'
       Include 'nitvar.ins'
       Include 'PuSurface.ins'
-       !DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
       Integer Max_fert_times,Fert_times,Num_nodes,node_Applied,
      &  fertilizerApplied
       Parameter (Max_fert_times=75, Max_fert_nodes=300)
@@ -40,14 +37,7 @@
      !         Amount_Applied_Nm(Max_fert_times),
      !         Num_nodes(Max_fert_nodes), node_Applied(Max_fert_times,
      !         Max_fert_nodes),Fert_times,fertilizerApplied,ModNum, 
-     !         fert_depth(Max_fert_times)
-      t=time
-cccz Dennis: this part of initialization is out of lInput block, please pay attention if it is what you want    
-      
-      
-      
-     
-
+     !         fert_depth(Max_fert_times)   
       
       If(lInput.eq.1) then
       Num_nodes=0 

@@ -7,11 +7,9 @@ C it is called once a day, at 5:00 am
        Subroutine AutoIrrigate()
        include 'public.ins'
        include 'puweath.ins'
-       include 'pusurface.ins'
-	 !DEC$ATTRIBUTES DLLIMPORT :: /Weath/, /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
+       include 'PuSurface.ins'
        Parameter (PERIOD =1./24.)
+       
        Real ThetaAvail50, ThetaFull50,AvailWaterRatio
        Real Thi, Thj, Thl, ThFl_i,ThFl_j, ThFl_l
        Real Bii(3),Cii(3), AE, Sum1, Sum2

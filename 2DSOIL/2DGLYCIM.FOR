@@ -3,17 +3,17 @@
 *     2DSOIL  - Numerical model of two-dimensional soil environment    *
 *                           for field crops with soybean model		 *
 *																	 *
-*						 Release 3.1.0							     *
+*						 Release 3.1.2							     *
 *||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*
-	
+
+	!DEC$ ATTRIBUTES DLLIMPORT:: Crop
+
 	Include 'public.ins'
       include 'puplant.ins'
 	Include 'puweath.ins'
 	Include 'nitvar.ins'
       Include 'pusurface.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/    
+
 
 	character*132 RunDat
 	integer len, status

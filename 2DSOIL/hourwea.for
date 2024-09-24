@@ -82,9 +82,7 @@ c inputs hourly data
       Include 'puplant.ins'
       Include 'puweath.ins'
       Include 'PuSurface.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/ 
+
       Parameter (PERIOD =1./24.)
       integer jday,m,CurYear,Modnum, ThisYear,
      &         isol, HOUR, iperd
@@ -127,6 +125,14 @@ cccz initialized surface water income
          Varbw_Mulch(i,2)=0.0D0
          Varbw_Mulch(i,3)=0.0D0 
       enddo
+      
+      
+csb: Gas transfer coefficient: surface gas flux change per unit gas content in the soil air at the soil surface (cm/day)
+Csb: This value will be different for different gases
+      GasTransfCoeff(1)=11920.
+      GasTransfCoeff(2)=15400.      
+      GasTransfCoeff(3)=12355.
+      
 C
 C  First and last days
 C
@@ -357,6 +363,8 @@ c model cannot handle freezing temperatures yet
            GAIR(2)=209000    !this is the atmospheric O2 concentration in ppm  
 csb O2 content of air=20.95% by volume, ie; 100 parts of air=20.95 parts of O2
 csb 1 part of air=0.2095 parts of O2. in 10^6 parts of air=0.2095*10^6=209000 ppm
+           GAIR(3)=0.332    !this is the atmospheric N2O concentration in ppm  [IPCC 2021,Technical summary]
+csb N2O concentration in atm 332 ppb=0.33 ppm 
 C
 C      ADJUST UNITS FOR HOURLY DATA
 c      HSR(M) is converted to an hours worth of Watts m-2 (Joules m-2 h-1) 

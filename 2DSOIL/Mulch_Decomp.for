@@ -90,9 +90,7 @@ c         bbbb                    dummy variable, receive unwanted data.
        include 'puweath.ins'
        include 'PuSurface.ins'
        include 'nitvar.ins'
-       !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/  
+       
        double precision 
      !   Frac_CARB_Init, Frac_CELL_Init, Frac_LIGN_Init,          !cccz initial fraction of each component of soil organic matter
      !   FracN_CARB_Init, FracN_CELL_Init, FracN_LIGN_Init,       !cccz INPUT: initial fraction of N within each residue pool

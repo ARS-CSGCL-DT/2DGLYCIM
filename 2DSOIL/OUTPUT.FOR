@@ -14,10 +14,7 @@ C summary output variables
       Include 'puweath.ins'
       Include 'puplant.ins'
       Include 'nitvar.ins'
-      include 'PuSurface.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/  
+      include 'PuSurface.ins'      
       Integer Plevel,e, hourCount
       
       Dimension temp(1000)
@@ -25,7 +22,7 @@ C summary output variables
       Real SeasonRainfall, SeasonPotenTranspiration,
      &     SeasonActualTranspiration, SeasonPotenSoilEvap,
      &     SeasonActualSoilEvap,SeasonActualInfil,
-     &     SumArrayTh, gridWidth,MaxY
+     &     SumArrayTh, MaxY
       Character*10 date, Stime
 cccz output for runoff module
       double precision SurInput_Flux,Surface_Flux,Bottom_Flux,
@@ -56,7 +53,7 @@ cccz output for runoff module
      &     ActualInfil,ActualInfil_02,ActualInfil_03,
      &     FluxGas(NumGD),Surface_Gas_Flux(NumGD),
      &     SumArrayTh(NumNPD), hourCount,
-     &     nitrogenFlux,Flux_drain, gridWidth,
+     &     nitrogenFlux,Flux_drain,
      &      ThetaFull, MaxY
       Common /SurfaceWaterBalance/ 
      &     SurInput_Flux,Surface_Flux,Bottom_Flux,
@@ -76,14 +73,8 @@ C
         NumMod=NumMod+1
         ModNum=NumMod
         tNext(ModNum) = time
-C calculate total width of surface and bottom boundary nodes
-C for scaling fluxes 
-C at this point we assume the that bottom and top boundaries have the same width
-         gridWidth=0.0
-         do i=1, nsurf
-          gridWidth=gridWidth+width(i)
-         end do 
 
+        
 C*** FROM HourlyOut.for BEGIN   
         SumArrayTh=ThNew
         hourCount=0
@@ -146,7 +137,7 @@ C declare files for output
 c NodeGrpahics       
       Write(81,5) "Date_time,", "Date,", "X,", "Y,", "hNew,","thNew,",
      &  "Vx,", "Vy,", "Q,", "NO3N,", "NH4N,","Temp,","Area,", 
-     &  "CO2Conc," , "O2Conc", "N2OConc"
+     &  "CO2Conc," , "O2Conc,", "N2OConc"
 
 c Element Graphics     
       Write(82,6) "Date_time,", "Date,", "X,", "Y,", "Node,", 
@@ -159,7 +150,7 @@ C G05 file  Surface Graphics
      &       "N_Leach,","Runoff,",
      &      "cover,","PSIM,", "SeasPSoEv,","SeasASoEv," ,"SeasPTran,",
      &      "SeasATran,","SeasRain,",    
-     &      "SeasInfil,","ThetaAvail,","CO2FLux,","O2FLux","N2OFLux"
+     &      "SeasInfil,","ThetaAvail,","CO2FLux,","O2FLux,","N2OFLux"
 
 c Flux Graphics       
        Write(84,20) "Date_time,", "Date,","Flux,","SoilEA,",
@@ -193,38 +184,7 @@ cccz initialize the mulch output file (analogy to the soil output g03)
      &     MulchNodeTmpr(n)
        enddo
        
-C calculate the full amount of water in the domain
-        MaxY=maxVal(Y)
-        ThetaFull=0.0
-        Do n=1,NumEl
-		   NUS=4
-		   if(KX(n,3).eq.KX(n,4)) NUS=3
-		   Sum1=0.
-		   Sum2=0.
-c*         Loop on subelements
-		   do k=1,NUS-2
-			 i=KX(n,1)
-			 j=KX(n,k+1)
-			 l=KX(n,k+2)
-			 Ci=x(l)-x(j)
-			 Cj=x(i)-x(l)
-			 Ck=x(j)-x(i)
-			 Bi=y(j)-y(l)
-			 Bj=y(l)-y(i)
-			 Bk=y(i)-y(j)
-			 AE=(Ck*Bj-Cj*Bk)/2.
-			 m=MatNumN(i)
-			 thAWi=ThFull(MatNumN(i))
-			 thAWl=ThFull(MatNumN(l))
-			 thAWj=ThFull(MatNumN(j))
-               if ((MaxY-y(i)).le.100.0
-     &          .and.(MaxY-y(j)).le.100.0
-     &           .and.(MaxY-y(l)).le.100.0)  then               
-
-                 ThetaFull=ThetaFull+AE*(ThAWi+ThAWj+ThAWl)/3.
-               EndIf
-		   Enddo
-		Enddo
+       
 
 cccz -----------------------------------------------------------------------
        
@@ -287,8 +247,8 @@ cccz changed varbw to Varbw_Air
             ActualSoilEvap=ActualSoilEvap-min(0.0,Q(n))*step
           endif
 c case for rainfall
-           if (abs(CodeW(n)).eq.4.or.((pondingByFlux.OR.
-     &         pondingByHead).eq.1)) then
+          if (abs(CodeW(n)).eq.4.or.(((pondingByFlux.eq.1).or.
+     &         (pondingByHead.eq.1)))) then
             ActualInfil=ActualInfil+max(0.0,Qact(n))*step
             ActualInfil_03=ActualInfil_03+max(0.0,Qact(n))*step
 cccz calculation of runoff
@@ -474,9 +434,9 @@ C
 C        Nitrogen flux conversion from g per slab to kg/ha   
          nitrogenFlux= nitrogenFlux/gridWidth*10**5        !10^5= 10^4 m2/ha x 10^4 cm2/m2 / 10^3 g/kg
 C Calculate relative available water
-          ThetaRelative=RelativeWaterContent(X,Y, ThAvail,
-     &            NumNP, KX,NumELD, NumEl)
-     &        /ThetaFull
+              ThetaRelative=RelativeWaterContent(X,Y, ThAvail,ThFull,
+     &            rtwt, NumNP, KX, NumElD,NumEl, NMat, MatNumN)
+     
 C     Gas unit conversion to ugCo2/cm2
           Surface_Gas_Flux=Surface_Gas_Flux/gridWidth    ! Unit ugCo2 per plant area
                 
@@ -567,7 +527,7 @@ C10    Call errmes(im,il)
 C format 5 is water, 6 is roots Vy is the last on on this lin
   5   Format (1x,A12, T20,A7,T37,A2,T47,A2, T56,A5,T68,A6,T82,A3,T94,
      &     A3,T105,A2, T117, A6, T129, A6, T141, A5, 
-     &     T152, A5,T165,A8,T176,A8,T184,A9 )   ! format for nodal data header
+     &     T152, A5,T165,A8,T176,A8,T187,A9 )   ! format for nodal data header
   6   Format (1x,A16,T20,A5,T36,A2,T46,A2,T56,A5,T65,A7,T78,A7, T90,A6,
      &        T102, A6, T112, A11, T124, A8, T136, A8)
  10   Format (1x,F17.6,',', A15,',',9(F16.3, ','), F14.5, ',',                  !relative water content  
@@ -661,19 +621,23 @@ C  by grid width to get cm of water per cm of soil
 C this is  done after it is called
   
        
-            function RelativeWaterContent(X,Y, ThetaAvail,
-     !              NumNP, KX, NumElD, NumEl)
-      real X, Y, ThetaAvail, ThetaFull, ThetaRel,
-     !    cii, bii, AE,ThetaAvailAll, MaxY
+      function RelativeWaterContent(X,Y, ThetaAvail,
+     !              ThetaFull,rtwt, NumNP, KX,  NumElD,
+     !             NumEl, NMat, MatNumN)
+      real X, Y, ThetaAvail, ThetaRel,ThetaFull,
+     !    cii, bii, AE,ThetaAvailAll, ThetaFull1All, 
+     !     rtwt
       integer NumNP, NMat, KX, NUS, K, i, j, l, n,
-     !        NumEl
+     !        NumElD,MatNumN
       
       
-      Dimension Y(NumNP), X(NumNP), KX(NumELD,4), 
-     !         ThetaAvail(NumNP), 
+      Dimension Y(NumNP), X(NumNP), KX(NumElD,4), 
+     !         ThetaAvail(NumNP), ThetaFull(NMat),
+     !         rtwt(NumNP),MatNumN(NumNP),
      !         cii(3), bii(3)
-            MaxY=maxVal(Y)
             RelativeWaterContent=0.0
+            ThetaFull1All=0.0
+            ThetaAvailAll=0.0
       Do n=1,NumEl
 		   NUS=4
 		   if(KX(n,3).eq.KX(n,4)) NUS=3
@@ -689,16 +653,26 @@ c*         Loop on subelements
 			 Bii(2)=y(l)-y(i)
 			 Bii(3)=y(i)-y(j)
 			 AE=(Cii(3)*Bii(2)-Cii(2)*Bii(3))/2.
-               if ((MaxY-y(i)).le.100.0
-     &          .and.(MaxY-y(j)).le.100.0
-     &           .and.(MaxY-y(l)).le.100.0) 
-     &            then 
-                    RelativeWaterContent=RelativeWaterContent+(AE*
-     &               (ThetaAvail(i)+ThetaAvail(j)+ThetaAvail(l))/3.0)
-                  endif
-		   Enddo
-C       get upper limit of water available            
+			
+			 Thi=ThetaFull(MatNumN(i))
+			 Thl=ThetaFull(MatNumN(l))
+			 Thj=ThetaFull(MatNumN(j))
+			 if (rtwt(i).le.1.0e-6) Thi=0.0
+			 if (rtwt(j).le.1.0e-6) Thj=0.0
+			 if (rtwt(l).le.1.0e-6) Thl=0.0
+			 ThetaFullAll=ThetaFullAll+AE*(Thi+Thj+Thl)/3.
+               
+               Thi=ThetaAvail(MatNumN(i))
+			 Thl=ThetaAvail(MatNumN(l))
+			 Thj=ThetaAvail(MatNumN(j))
+			 if (rtwt(i).le.1.0e-6) Thi=0.0
+			 if (rtwt(j).le.1.0e-6) Thj=0.0
+			 if (rtwt(l).le.1.0e-6) Thl=0.0
+               ThetaAvailAll=ThetaAvailAll+AE*(Thi+Thj+Thl)/3.
+     	   Enddo
        
-        Enddo      
+      Enddo 
+      RelativeWaterContent=
+     !      min(1.0,ThetaAvailAll/(ThetaFullAll+.0001))    
         Return
         End

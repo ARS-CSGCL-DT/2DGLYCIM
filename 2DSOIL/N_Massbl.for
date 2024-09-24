@@ -4,12 +4,7 @@ Cdt N in 2DSOIL is nitrate (NO3) and the units are ug per cm3 or milligram/liter
         include 'public.ins'
         include 'nitvar.ins'
         include 'puplant.ins' 
-        Include 'pusurface.ins'
-     	  !DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/,
-     ! /ShootR/,/shtR_public/
-        
+        Include 'PuSurface.ins'  
         Dimension Bi(3),Ci(3)
         Character*10 Date
         Real AE,Profile_N,Manure_N,Litter_N,

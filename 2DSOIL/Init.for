@@ -2,9 +2,7 @@
       Include 'public.ins'
       Include 'puweath.ins'
       Include 'puplant.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/ 
+
 	
 	Character*10 Sowing,Emerge,Ending,Date4,Date1  ! date1 is dummy for beginDay until we modify the itnerface
 	Character*256 RootName,T1,T2
@@ -13,7 +11,7 @@
       integer iapos, Quote_COUNT, begindate
       character myStr*10  ! wsun add mystr to calculate tmpday
 	Integer CurYear, JulDay
-c     find root of file name in runfile TODO
+c    find root of file name in runfile TODO
 c     for writing frequency to output
       Daily=0
       Hourly=0
@@ -193,6 +191,7 @@ c dt
       NvarBT=0
       NvarBG=0
       NShoot=0
+      NumG=3                                    ! For now, only 3 gas is read (co2, o2, N2O)
     
         KXB(:)=0
         Width(:)=0.

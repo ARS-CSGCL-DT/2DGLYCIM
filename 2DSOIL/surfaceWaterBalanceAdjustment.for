@@ -15,9 +15,7 @@ c ******************************************************************************
       include 'puweath.ins'
 cccz      include 'puplant.ins'
       include 'PuSurface.ins'
-	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
+      
       
       integer FlatSurface
       double precision totalLength,MaxPondFlatSur,
@@ -96,7 +94,7 @@ cccz_try
 c        CriticalH_R=5.0D0
           
 cccz CriticalH is for soil water module for 
-        CriticalH=-0.01D0
+       !CriticalH=5.101D0
           
 cccz We treat runoff is a submodule of weather, but iterated with watermov
 cccz but we do not need a module number because this runoff process is always consistent with water/heat_mov
@@ -249,6 +247,8 @@ cccz record the surface temperature boundary condition
 cccz initialization finished here
 cccz ****************************************************************************************** 
 
+C if we have ponded water for infiltration, runoff will not need to be calculated
+        if ((PondingByFlux.eq.1).or.(PondingByHead.eq.1)) return
       
 cccz sometime the program go backwards, then we should avoid multiple computation of runoff
 cccz the simplist way is to track the time and do nothing if the time moves backwards

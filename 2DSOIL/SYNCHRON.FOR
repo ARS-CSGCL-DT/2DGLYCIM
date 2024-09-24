@@ -2,9 +2,7 @@
        
       Subroutine Synchronizer()
       Include 'public.ins'
-	!DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
+      
       character line*40
       Character*10 SDate,FDate
       double precision tFix,tRigid,dt,t,dtmax

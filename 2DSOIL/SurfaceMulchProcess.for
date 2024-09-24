@@ -214,9 +214,6 @@ c ------------------------------------------------------------------------------
        include 'puplant.ins'
        include 'puweath.ins'
        include 'PuSurface.ins'
-       !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /Weath/, 
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/   
        
 cccz control variables
 c    some dummy varibles that hold temperary values
@@ -4623,53 +4620,6 @@ c    for each time segment during the iteration, use the same scheme showed foll
        enddo  
       enddo
       
-cccz old code
-c      do n=1,SurNodeIndex-1
-c       if(n.eq.1) then
-c         kSurL=SurfNodeSurfIndexH(n)
-c         Local_VarBW1=RainFallInput_temp(1,n)/10000.0D0
-c         Local_VarBW2=-g_Vapor(kk,n)/10000.0D0
-c         Local_VarBW3=Local_VarBW2-Local_VarBW1
-c         VarBW1_temp(n)=VarBW1_temp(n)+Local_VarBW1*LocalStep
-c         VarBW2_temp(n)=VarBW2_temp(n)+Local_VarBW2*LocalStep
-c         VarBW3_temp(n)=VarBW3_temp(n)+Local_VarBW3*LocalStep
-c         Q_temp(n)=Q_temp(n)+(-Width(kSurL)*Local_VarBW3)*LocalStep
-c       elseif(n.eq.(SurNodeIndex-1)) then
-c         kSurL=SurfNodeSurfIndexH(n)
-c         kSurR=SurfNodeSurfIndexH(n+1)
-c         Local_VarBW1=(RainFallInput_temp(1,n-1)*widthPerMulchUnit(n-1)
-c     &    +RainFallInput_temp(1,n)*widthPerMulchUnit(n))
-c     &    /(widthPerMulchUnit(n-1)+widthPerMulchUnit(n))/10000.0D0
-c         Local_VarBW2=-(g_Vapor(kk,n-1)*widthPerMulchUnit(n-1)
-c     &    +g_Vapor(kk,n)*widthPerMulchUnit(n))
-c     &    /(widthPerMulchUnit(n-1)+widthPerMulchUnit(n))/10000.0D0
-c         Local_VarBW3=Local_VarBW2-Local_VarBW1
-c         VarBW1_temp(n)=VarBW1_temp(n)+Local_VarBW1*LocalStep
-c         VarBW2_temp(n)=VarBW2_temp(n)+Local_VarBW2*LocalStep
-c         VarBW3_temp(n)=VarBW3_temp(n)+Local_VarBW3*LocalStep
-c         Q_temp(n)=Q_temp(n)+(-Width(kSurL)*Local_VarBW3)*LocalStep
-c         Local_VarBW1=RainFallInput_temp(1,n)/10000.0D0
-c         Local_VarBW2=-g_Vapor(kk,n)/10000.0D0
-c         Local_VarBW3=Local_VarBW2-Local_VarBW1
-c         VarBW1_temp(n+1)=VarBW1_temp(n+1)+Local_VarBW1*LocalStep
-c         VarBW2_temp(n+1)=VarBW2_temp(n+1)+Local_VarBW2*LocalStep
-c         VarBW3_temp(n+1)=VarBW3_temp(n+1)+Local_VarBW3*LocalStep
-c         Q_temp(n+1)=Q_temp(n+1)+(-Width(kSurR)*Local_VarBW3)*LocalStep
-c       else
-c         kSurL=SurfNodeSurfIndexH(n)
-c         Local_VarBW1=(RainFallInput_temp(1,n-1)*widthPerMulchUnit(n-1)
-c     &    +RainFallInput_temp(1,n)*widthPerMulchUnit(n))
-c     &    /(widthPerMulchUnit(n-1)+widthPerMulchUnit(n))/10000.0D0
-c         Local_VarBW2=-(g_Vapor(kk,n-1)*widthPerMulchUnit(n-1)
-c     &    +g_Vapor(kk,n)*widthPerMulchUnit(n))
-c     &    /(widthPerMulchUnit(n-1)+widthPerMulchUnit(n))/10000.0D0
-c         Local_VarBW3=Local_VarBW2-VarBW(kSurL,1)
-c         VarBW1_temp(n)=VarBW1_temp(n)+Local_VarBW1*LocalStep
-c         VarBW2_temp(n)=VarBW2_temp(n)+Local_VarBW2*LocalStep
-c         VarBW3_temp(n)=VarBW3_temp(n)+Local_VarBW3*LocalStep
-c         Q_temp(n)=Q_temp(n)+(-Width(kSurL)*Local_VarBW3)*LocalStep
-c       endif 
-c      enddo
       
     
       if(PerOccupation.eq.2.0D0) then

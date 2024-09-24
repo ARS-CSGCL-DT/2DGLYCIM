@@ -5,9 +5,7 @@
 		  Subroutine TillageProcess()
 		  Include 'public.ins'
 		  include 'nitvar.ins'
-     	      !DEC$ATTRIBUTES DLLIMPORT :: /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
+
 		  Double precision tillage_date
 		  Real till_Depth, y_tillageLimit,tillArea
 		  Real vwcBefore,vwcAfter,ThAvg,ThTill

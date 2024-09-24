@@ -1,9 +1,6 @@
       subroutine Root_Mover()
       Include 'public.ins'
       Include 'puplant.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/,
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/
       Double precision A,B,C,P,Sum
       Character InString*132
       Integer newjjj

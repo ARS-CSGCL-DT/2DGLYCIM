@@ -4,9 +4,6 @@ C I am inputting dummy variables for the weights, we can
       Subroutine Carbon_Partitioning()
       Include 'public.ins'
       Include 'puplant.ins'
-	!DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/, /grid_public/,  
-     ! /nodal_public/, /elem_public/, /bound_public/, /time_public/,
-     ! /module_public/,  /DataFilenames/  
       Dimension iLoc(4)
       Character InString*132
       Integer e,e1,SW10,SW20,SW30,SW40
@@ -460,6 +457,8 @@ c WUPN water uptake by new roots
              END IF       
 
 C  NOTE 10.17
+c WUPMS total water uptake by mature roots
+c WUPSI sum of water potential * rate of extraction in node
              WUPMS = WUPMS +(WUPM(n) + WUPN(n))
              WUPSI = WUPSI +(PSIS(n)*(WUPM(n) + WUPN(n)))
               
@@ -472,9 +471,9 @@ C  RATE DURING PAST PERIOD. START WITH SOIL CELL WHERE CONDITIONS
 C  ARE MOST FAVORABLE FOR GROWTH
 C
 
-      PCRTS = 0.       ! potential root carbon use  g day-1
-      WUPTS = 0.       ! new root water uptake carbon all to root   g day-1
-      WUPRS = 0.
+      PCRTS = 0.       ! potential total root carbon use  g day-1 could include pcrq
+      WUPTS = 0.       ! new root water uptake when all carbon goes to the root   g day-1
+      WUPRS = 0.       !rate if water uptake when shoot growth potential has been satisfied.
       SW10 = 0
       DO 90, n=1,NumNP
         n1=iFavRoot(n)
@@ -486,7 +485,7 @@ C   DETERMINE TOTAL WATER UPTAKE BY ALL NEW ROOTS AND WEIGHTED
 C   AVERAGE SOIL WATER POTENTIAL WHEN:
 C   I. ROOTS GET ALL THE CARBON TRANSLOCATED
 C
-        WUPT(n1)=0.0
+        WUPT(n1)=0.0    ! rate of water uptake when water potential prevents shoot growth
         IF(LAI.EQ.0.0) Then
         WUPT(n1) = (((PSIS(n1) - PSILT)*DRL(n1))
      &   /(SR(n1) + RRRY + RVR(n1)))

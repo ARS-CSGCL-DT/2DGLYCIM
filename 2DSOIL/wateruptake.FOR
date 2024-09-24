@@ -2,9 +2,6 @@ c|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||c
       Subroutine WaterUptake()
       Include 'public.ins'
       Include 'puplant.ins'
-      !DEC$ATTRIBUTES DLLIMPORT :: /ShootR/, /shtR_public/,
-     !/grid_public/,/nodal_public/, /elem_public/, /bound_public/, 
-     !/time_public/,/module_public/,  /DataFilenames/  
       Integer n,n1,SW10,SW20,SW30,SW40
 
                        
