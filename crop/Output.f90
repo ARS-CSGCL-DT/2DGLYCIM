@@ -3,8 +3,9 @@
 ! dt added leafwt and Stem weight 12/6/2006
 !-----------------------------------------------------------------------
  SUBROUTINE Cropoutput
-	 INCLUDE 'common.h'
-	 Include 'plant.h'
+	 use common_block
+     INCLUDE 'common.h'
+	 
 	 Character InString1*120
 	 character * 10 date1
 	 integer iday, iday1, hour
@@ -12,10 +13,7 @@
      REAL CumulativeNUptake, CumulativeNDemand,Pgday,Pnday
 
      common /output_G/ CumulativeNUptake, CumulativeNDemand,Pgday,Pnday
-	 !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/, /shtR_public/,          &
-	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	          &
-	    /bound_public/, /time_public/, /module_public/,					  &
-	     /DataFilenames/  
+  
 	    If (lInput .eq. 1) then
           CumulativeNUptake=0.0
           CumulativeNDemand=0.0

@@ -3,12 +3,10 @@
 ! of growth as defined by FEHR and CAVINESS, 1977. 
 ! There are no other subroutines in this module.
       SUBROUTINE PHEN
+      use common_block   
       INCLUDE 'common.h'
-	  INCLUDE 'plant.h'   
-	  !DEC$ATTRIBUTES DLLEXPORT :: CROP, /ShootR/, /shtR_public/, &
-	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	  &
-	    /bound_public/, /time_public/, /module_public/,			  &
-	     /DataFilenames/, /Materials/ 
+	  
+
       COMMON /ACCU/ DEFICIT, DDAE, DAE, U0, DR2, U5, DDU5, DU6, DR8,&
                     IRFLAG1, IRFLAG4, UMAX
 !      INTEGER CurYear, julday

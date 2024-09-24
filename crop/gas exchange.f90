@@ -30,12 +30,10 @@
 !**   "parasitic".                                                   **
 !**********************************************************************
       SUBROUTINE PNET
-	  INCLUDE 'Common.h'
-	  INCLUDE 'plant.h'
-	  !DEC$ATTRIBUTES DLLEXPORT :: PNET, /ShootR/, /shtR_public/, &
-	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	  &
-	    /bound_public/, /time_public/, /module_public/,			  &
-	     /DataFilenames/ 
+	  
+	  use common_block
+      INCLUDE 'Common.h'
+	 
       REAL    LLAREA, LLFWT, LYTRES
 	  !WSUN change endday to dayend
       LOGICAL LIGHT, DAYEND       

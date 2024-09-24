@@ -4,17 +4,14 @@
 !  Crop - subroutine 
 
     subroutine crop()
+	use common_block
+    Include 'common.h'
 	
-    Include 'Common.h'
-	Include 'Plant.h'
-    
+    !DEC$ATTRIBUTES DLLEXPORT :: crop
     Real CurrentNUptakeError, CumulativeNuptakeError
 
     common /crop_main/CumulativeNUptakeError
-     !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/,&
-	 /Weath/, /grid_public/, /nodal_public/, /elem_public/,	   &
-	    /bound_public/, /time_public/, /module_public/,        &
-	     /DataFilenames/    
+   
 	!Write(*,*) Time 
     !***initializing crop module----------	
     If (lInput .eq. 1) then
@@ -36,7 +33,8 @@
 		Tgrowth = 0
         NumMod=NumMod+1
         ModNum=NumMod
-		tNext(ModNum) = Time + Period/24
+        Mature=0
+		tNext(ModNum) = emergeDay
         !INIT = .TRUE.
 		
     !***A new plant model object is created and initialized (calls initialize function) here
@@ -49,11 +47,32 @@
     End if
 
     !***End Initialization
+     If (Mature .eq. 1) return
+    if (Abs(Time-sowingDay+1).lt.0.001) isGerminated = 1  
+    !Simulate nitrogen and water uptake for each interval prior to 60min
+   
+    If (NShoot .GT. 0) then
+		WaterUptake = WaterUptake + AWUPS*Step			   !g water per slab taken up in an hour
+		NitrogenUptake = NitrogenUptake + SIncrSink/1.0e6  !Cumulative N (mass, g (plant slab)-1) in this time step
+		HourlyCarboUsed = HourlyCarboUsed + PCRS*Step 
+		
+	End if 	 
+   
+
+ !If the emergence date has come then start the crop model
+    ! code inside this if statement is executed every hour once the crop has emerged
+  if (abs(time-tNext(modnum)).lt. 0.001*step) then
+       if (NShoot .eq. 0) then 
+	    NShoot=1
+	    INIT = .TRUE.
+        isEmerged = 1
+      endif
+  	   
  
     !check to make sure when crop is matured, dll is exited (avoids error message at end of simulation
     !If (Simulationdone .eq. 1) GOTO 1111 
-	If (Mature .eq. 1) return
-	!Below is the values for gas exchanger.dll
+
+        !Below is the values for gas exchanger.dll
 		  CDayOfYear = DayOfYear
 		  CITIME = ITIME
 		  CIPERD = IPERD
@@ -68,33 +87,6 @@
 	      CLAREAT = LAREAT
 	      CLAI = LAI
 		  
-	!Check to make sure when the crop Germinated!(second day of planting is germinated)
-	if ((NShoot .eq. 0) .and. (Abs(Time-sowingDay+1).lt.0.001)) isGerminated = 1  
-	
-	!If the emergence date has come and there is not plant, let the program know so other calculations are not done
-	if ((NShoot .eq. 0) .and. Abs(Time-emergeDay).lt.0.001) then 
-	   NShoot=1
-	   INIT = .TRUE.
-       isEmerged = 1
-	   
-	end if
-		
-    !Simulate nitrogen and water uptake for each interval prior to 60min
-    If (NShoot .GT. 0) then
-		WaterUptake = WaterUptake + AWUPS*Step			   !g water per slab taken up in an hour
-		NitrogenUptake = NitrogenUptake + SIncrSink/1.0e6  !Cumulative N (mass, g (plant slab)-1) in this time step
-		HourlyCarboUsed = HourlyCarboUsed + PCRS*Step 
-		
-	End if 
-	
-
-	   
-!***hourly Crop routine***
-   
-	!If((Abs(Time-tNext(ModNum)).le.0.001*Step) .and. (NShoot .gt. 0)) then
-         !If(NShoot .gt. 0) then	
-	If(Abs(Time-tNext(ModNum)).le.0.001*Step) then
-		If(NShoot .gt. 0) then		
 !this should be comparison just for current hourly time-step - note NitrogenUptake reset to zero each hour, so above line was incorrect comparison          
 		CurrentNUptakeError = NitrogenUptake/POPSLB  - HourlyNitrogenDemand
         CumulativeNUptakeError = CumulativeNUptakeError + CurrentNUptakeError
@@ -112,12 +104,13 @@
 			INIT = .FALSE.
 			
 			!LCAI = LAREAT*PopArea/(100*100)
+            !hieght is minimum of 2 cm when germinated
             Shade = Cover*RowSp
-			Height=min(Shade,RowSp)
+			Height=max(min(Shade,RowSp),2.0)
 			LCAI = LAREAT*POPROW/100.0/MIN(HEIGHT,ROWSP)
 			Cover = 1.0 - exp (-0.79*LCAI)
 			Shade = Cover*RowSp
-			Height=min(Shade,RowSp)
+			Height=max(min(Shade,RowSp),2.0)
 			ET_demand = transpiration*0.018*3600*24/PopArea !pass ET demand from shoot to root, g plant-1 d-1 //instanteous transpiration, mmol H2O m-2 ground s-1
 			LAI = LAREAT*PopArea/(100*100)
 			nitroDemand = HourlyNitrogenDemand*POPSLB*1e6*24 !pass the N demand into 2dsoil, units are ug N slab-1 d-1
@@ -125,8 +118,8 @@
 			CumulativeNDemandError = CumulativeNUptakeError !these units are g N plant-1 - why is nitroDemand in ug N slab-1?
 		
 		    CALL Cropoutput
-		end if
-		
+            
+    			
 	    if(Mature .eq. 1 ) then
 		    !Simulationdone = 1
 		    NShoot = 0             !tell 2dsoil that crops harvested
@@ -136,10 +129,10 @@
 			WaterUptake = 0
 			NitrogenUptake = 0
 			TotalPotentialRootWaterUptake = 0
-!			ModNum=NumMod
+
 			
 	    end if
-	end if
+    end if  ! end of if statement for hourly time step calling crop model
     
 !***End of Daily crop routine***
 !1111 return

@@ -9,12 +9,10 @@
 !*                                                                     *
 !***********************************************************************
       SUBROUTINE ACTGRO
+      use common_block
       INCLUDE 'common.h'
-	  INCLUDE 'plant.h'
-	  !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/, &
-		/Weath/, /grid_public/, /nodal_public/, /elem_public/,   &
-	    /bound_public/, /time_public/, /module_public/,          &
-	     /DataFilenames/   
+	  
+   
       REAL dPopt, dP
 	  COMMON/ACT1/D17, dPopt, dP
 
@@ -370,117 +368,15 @@
       SCPOOL = SCPOOL + REMC
       SHTWT = LEAFWT + PETWT + STEMWT
 
-! GROW ROOTS IN THE MOST FAVORABLE CELLS UNTIL CARBON AVAILABLE
-! IS USED.
-!wsun Below is root growth which was in 2d soil
 
-      !PCRTS = 0.0
-      !SW40 = 0
-      !DO J = 1,NCR
-         !L = PCRPAR(J)/1000
-         !K = PCRPAR(J) - L*1000
-         !IF (PDWR(L,K).LE.0.0) THEN
-		    !aux = 0.0
-!           !ADWR(L,K) = 0.0
-         !ELSE
-            !PCRTS = PCRTS + PDWR(L,K)*CONVR
-            !IF (PCRS.GE.PCRTS) THEN
-			   !aux = PDWR(L,K)
-!              !ADWR(L,K) = PDWR(L,K)
-             !ELSE IF ((SW40.GT.1).OR.(SW40.LT.1)) THEN
-               !SW40 = 1
-               !aux = (PDWR(L,K)*CONVR - PCRTS + PCRS)/CONVR
-!              !ADWR(L,K) = (PDWR(L,K)*CONVR - PCRTS + PCRS)/CONVR
-            !ELSE
-			   !aux = 0.0
-!              !ADWR(L,K) = 0.0
-            !END IF
-         !END IF
-
-! CALCULATE ROOT GROWTH RATE.
-
-		 !AWR(L,K) = aux * PERIOD
-!        !AWR(L,K) = ADWR(L,K)*PERIOD
-         !ROOTWT = ROOTWT + AWR(L,K)/POPSLB
-      !END DO
-!     DO n = 1,NumNP
-!	       ROOTWT = ROOTWT + AWR(n)/POPSLB/24
-!     END DO
-      !PCRS=AMIN1(PCRTS,PCRS)                                      !YAP
-
-! MINIMUM ROOT LENGTH TO CROSS A SOIL CELL DIAGONALLY
-
-      !IF ( INIT ) RTMINW = RTWL*SQRT(DEPTH*DEPTH + WIDTH*WIDTH)
-
-! REDISTRIBUTE ROOT GROWTH IN THE SOIL PROFILE AND CALCULATE
-! THE ROOT WEIGHT,NEW ROOT LENGTH AND CO2 RESPIRED IN EACH CELL.
-
-      !NLRP = NLR
-      !NKRP = NKR
-      !DO L = 1,NLR
-         !DO K = 1,NKR
-            !ADRL(L,K) = 0.0
-            !IF ((AWR(L,K).GT.0.0).OR.(AWR(L,K).LT.0.0)) THEN
-! Note 12.13
-               !IF (RTWT(L,K) .GT. RTMINW) THEN
-                  !LP1 = L + 1
-                  !IF (L.EQ.NL) LP1 = NL
-                  !IF (LP1.GT.NLR) NLRP = LP1
-                  !KP1 = K + 1
-                  !IF (K.EQ.NKH) KP1 = NKH
-                  !IF (KP1.GT.NKR) NKRP = KP1
-                  !LM1 = L - 1
-                  !IF (L.EQ.1) LM1 = 1
-                  !KM1 = K - 1
-                  !IF (K.EQ.1) KM1 = 1
-! Note 12.14
-                  !D19 = RGCF(L,K) + RGCF(L,KM1) + 1.5*RGCF(L,KP1) +    &
-                        !RGCF(LM1,K) + 5.0*RGCF(LP1,K)
-                  !IF (.NOT.((D19.GT.0.).OR.(D19.LT.0.))) GOTO 1112
-                  !D20 = AWR(L,K)*RGCF(L,K)/D19
-                  !RTWT(L,K) = RTWT(L,K) + D20
-! Note 12.15
-                  !RESPS(L,K) = RESPS(L,K) + D20*CONRES
-				  !ADRL(L,K)  = ADRL(L,K) + D20/RTWL
-                  !D21 = AWR(L,K)*RGCF(L,KM1)/D19
-                  !RTWT(L,KM1)  = RTWT(L,KM1) + D21
-                  !RESPS(L,KM1) = RESPS(L,KM1) + D21*CONRES
-                  !ADRL(L,KM1) = ADRL(L,KM1) + D21/RTWL
-                  !D22 = AWR(L,K)*1.5*RGCF(L,KP1)/D19
-                  !RTWT(L,KP1) = RTWT(L,KP1) + D22
-                  !RESPS(L,KP1) = RESPS(L,KP1) + D22*CONRES
-                  !ADRL(L,KP1) = ADRL(L,KP1) + D22/RTWL
-                  !D23 = AWR(L,K)*RGCF(LM1,K)/D19
-                  !RTWT(LM1,K) = RTWT(LM1,K) + D23
-                  !RESPS(LM1,K) = RESPS(LM1,K) + D23*CONRES
-                  !ADRL(LM1,K) = ADRL(LM1,K) + D23/RTWL
-                  !D24 = AWR(L,K)*1.5*RGCF(LP1,K)/D19
-                  !RTWT(LP1,K) = RTWT(LP1,K) + D24
-                  !RESPS(LP1,K) = RESPS(LP1,K) + D24*CONRES
-                  !ADRL(LP1,K) = ADRL(LP1,K) + D24/RTWL
-                  !CYCLE
-               !END IF
- !1112          !RTWT(L,K) = RTWT(L,K) + AWR(L,K)
-               !RESPS(L,K) = RESPS(L,K) + AWR(L,K)*CONRES
-               !ADRL(L,K) = ADRL(L,K) + AWR(L,K)/RTWL
-            !END IF
-         !END DO
-      !END DO
-      !NLR = NLRP
-      !NKR = NKRP
-!RDenY(n)=0.0D0		density of young root in soil cell cm/cm2 (new version)
-! wsun CALCULATE LENGTH OF YOUNG ROOTS IN CELLS
-! ADRL(L,K)	cm	Actual change in root length in soil cell L,K for past period (cm).
       ROOTWT = TotalRootWeight/POPSLB
-      !DO K = 1,NKR
+
 		DO n = 1,NumNP
 ! 0.021 = 1/2/24; **** Note 12.16
            YRL(n) = (YRL(n)*(1.0 - (0.021*PERIOD))) + ADRL(n)/24 !ADRL:  cm/day
-           !RUTDEN(L,K) = RUTDEN(L,K) +                                 &
-		                 !YRL(L,K)*0.021*PERIOD/(DEPTH*WIDTH)
-			!YRL(n) = RDenY(n)*nodeArea(n)
+
          END DO
-      !END DO
+
 
 ! CALCULATE AMOUNT OF CARBON IN THE ROOT STORAGE POOL
 

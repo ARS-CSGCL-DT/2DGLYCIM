@@ -3,12 +3,9 @@
 ! and water are not limiting but allowing for temperature limitation.
 ! ------------------------------------------------------------------
       SUBROUTINE SHTGRO
+      use common_block
       INCLUDE 'common.h'
-	  INCLUDE 'plant.h'
-	  !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/,&
-		/Weath/, /grid_public/, /nodal_public/, /elem_public/,  &
-	    /bound_public/, /time_public/, /module_public/,         &
-	     /DataFilenames/    
+      
       COMMON/SHT1/ALFINT
       INTEGER VSTMAX,TBMAX
       DIMENSION TBMAX(20)

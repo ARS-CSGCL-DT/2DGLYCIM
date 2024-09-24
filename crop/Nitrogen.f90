@@ -4,12 +4,10 @@
 ! to nodules.
 !***********************************************************************
   SUBROUTINE NITRO
+      use common_block
       INCLUDE 'common.h'
-	  INCLUDE 'plant.h'
-	  !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/,/shtR_public/,&
-		/Weath/, /grid_public/, /nodal_public/, /elem_public/,  &
-	    /bound_public/, /time_public/, /module_public/,         &
-	     /DataFilenames/    
+	  
+	 
       IF ( INIT ) THEN
       INITR2 = 0
       PLNO3 = 0.0
@@ -39,7 +37,9 @@
 ! SIncrSink g slab-1 h-1
 ! Total nitrate-nitrogen in plant (g N).
 !	  PLNO3 = PLNO3 + SUPNO3
+      NitrogenUptake = 1.0e-4
 	  PLNO3 = PLNO3 + NitrogenUptake/POPSLB ! THIS FROM 2DSOIL g plant-1
+!      write(*,*) 'Time: ', time, 'PLNO3: ',PLNO3, 'NitrogenUptake: ',NitrogenUptake
       PLNH4 = 0.0
       IF (PLNO3.GT.0.0) THEN
 ! Note 11.01

@@ -4,18 +4,15 @@
 ! dt added leafwt and Stem weight 12/6/2006
 !-----------------------------------------------------------------------
  SUBROUTINE Initialize
-	 INCLUDE 'common.h'
-	 Include 'plant.h'
-	 Character InString1*120,                                   &
+	 
+	 use common_block
+     INCLUDE 'common.h'
+	 
+     Character InString1*120,                                   &
 	 nitrogencrp*256, plantstresscrp*256
      Character*256 extract_path, path
 	 
-    
-	 !DEC$ATTRIBUTES DLLEXPORT :: crop, /ShootR/, /shtR_public/,&
-	    /Weath/, /grid_public/, /nodal_public/, /elem_public/,	&
-	    /bound_public/, /time_public/, /module_public/,         &
-	     /DataFilenames/  
-	
+  
    Write(*,*)'************************ GLYCIM ***********************'  
    Write(*,*)'*                    Version 9.1.0                    *'  
    Write(*,*)'*                                                     *'  
